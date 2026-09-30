@@ -395,6 +395,24 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-strip-action.btn-fullscreen-highlight {
+  width: auto;
+  border-radius: var(--radius-full);
+  padding: 0 14px;
+  gap: 6px;
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.45);
+}
+
+.btn-strip-action.btn-fullscreen-highlight:active {
+  transform: scale(0.94);
 }
 
 .btn-strip-action.active {

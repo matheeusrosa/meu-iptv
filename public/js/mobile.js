@@ -44,6 +44,7 @@
     btnPrev: document.getElementById('btn-prev'),
     btnNext: document.getElementById('btn-next'),
     btnFullscreen: document.getElementById('btn-fullscreen'),
+    btnFullscreenStrip: document.getElementById('btn-fullscreen-strip'),
     btnPip: document.getElementById('btn-pip'),
     btnReload: document.getElementById('btn-reload'),
     btnAspect: document.getElementById('btn-aspect'),
@@ -162,47 +163,31 @@
         enableWorker: true,
         lowLatencyMode: false,
         backBufferLength: 60,          // Retém 1 minuto em RAM para retorno sem sobrecarregar o celular
-        maxBufferLength: 20,           // Mantém até 20s de buffer pré-carregado à frente
-        maxMaxBufferLength: 40,
-        maxBufferSize: 30 * 1000 * 1000,
-        startLevel: -1,                // Auto ABR: Inicia com o melhor bitrate para o celular
-        capLevelToPlayerSize: true,    // Adequa a resolução à tela do celular economizando dados
-        abrBandWidthFactor: 0.70,      // Margem de segurança de 30% contra oscilações de Wi-Fi e 4G
-        abrBandWidthUpFactor: 0.50,
+        maxBufferLength: 90,           // Mantém até 90s de buffer pré-carregado à frente (estilo YouTube)
+        maxMaxBufferLength: 180,
+        maxBufferSize: 100 * 1000 * 1000,
+        highBufferWatchdogPeriod: 1,   // Monitora e preenche o buffer a cada 1 segundo continuamente
+        startLevel: -1,                // Auto ABR
+        capLevelToPlayerSize: false,
         startFragPrefetch: true,       // Pré-carrega próximo fragmento sem micro-pausas
-        progressive: false,            // Garante estabilidade dos pacotes MPEG-TS
-        manifestLoadingTimeOut: 15000,
-        manifestLoadingMaxRetry: 5,
-        levelLoadingTimeOut: 15000,
-        fragLoadingTimeOut: 18000,
-        fragLoadingMaxRetry: 6,
-        liveSyncDurationCount: 3,      // Sincronização inteligente a 3 segmentos da borda ao vivo
-        liveMaxLatencyDurationCount: 8,// Reconecta à transmissão ao vivo sem travar em fragmentos expirados
-        maxLiveSyncPlaybackRate: 1.1,  // Suave sincronização de atraso
+        progressive: false,
+        manifestLoadingTimeOut: 20000,
+        manifestLoadingMaxRetry: 8,
+        levelLoadingTimeOut: 20000,
+        fragLoadingTimeOut: 25000,
+        fragLoadingMaxRetry: 10,
+        liveSyncDurationCount: 3,      // Inicia a 3 segmentos da borda ao vivo
+        liveMaxLatencyDuration: Infinity,      // Estilo YouTube: Mantém o atraso se a conexão cair 5s, sem pular ou retroceder
+        liveMaxLatencyDurationCount: Infinity, // Sem avanço automático forçado
+        maxLiveSyncPlaybackRate: 1.0,  // Velocidade SEMPRE 1.0x (sem acelerar áudio nem vídeo)
         liveDurationInfinity: true,
-        nudgeOffset: 0.2,
-        nudgeMaxRetry: 10
+        nudgeMaxRetry: 0               // Sem saltos de timestamp artificiais
       });
 
       hls.loadSource(safeUrl);
       hls.attachMedia(dom.video);
 
       hls.on(window.Hls.Events.MANIFEST_PARSED, (event, data) => {
-        // Blindagem contra instabilidade no celular
-        if (data && data.levels && data.levels.length > 1) {
-          let stableLevelIdx = -1;
-          for (let i = 0; i < data.levels.length; i++) {
-            const bw = data.levels[i].bitrate;
-            if (bw >= 1200000 && bw <= 2800000) {
-              stableLevelIdx = i;
-              break;
-            }
-          }
-          if (stableLevelIdx !== -1) {
-            hls.autoLevelCapping = stableLevelIdx;
-            hls.startLevel = stableLevelIdx;
-          }
-        }
         hideStatus();
         dom.video.play().then(() => {
           dom.unmuteBanner.classList.remove('hidden');
@@ -212,12 +197,9 @@
       });
 
       hls.on(window.Hls.Events.ERROR, (event, data) => {
-        // Auto-recuperação de micro-travamentos de buffer em redes móveis/Wi-Fi
+        // Recuperação suave estilo YouTube: deixa o buffer encher naturalmente sem tocar em currentTime
         if (data.details === window.Hls.ErrorDetails.BUFFER_STALLED_ERROR) {
-          console.warn('[Mobile HLS] Destravando buffer automaticamente...');
-          if (dom.video && !dom.video.paused) {
-            dom.video.currentTime += 0.08;
-          }
+          if (hls) hls.startLoad();
           return;
         }
 
@@ -334,13 +316,34 @@
 
   function toggleFullscreen() {
     const video = dom.video;
-    if (document.fullscreenElement) {
-      document.exitFullscreen().catch(() => {});
-    } else if (video.requestFullscreen) {
-      video.requestFullscreen().catch(() => {});
-    } else if (video.webkitEnterFullscreen) {
-      // Suporte para iPhone Safari
-      video.webkitEnterFullscreen();
+    const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+
+    if (isFullscreen) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    } else {
+      // iPhone / iPad (Safari usa exclusivamente webkitEnterFullscreen no elemento <video>)
+      if (video.webkitEnterFullscreen) {
+        video.webkitEnterFullscreen();
+      } else if (video.requestFullscreen) {
+        // Android / Chrome
+        video.requestFullscreen().catch(() => {
+          const wrapper = document.querySelector('.video-wrapper');
+          if (wrapper && wrapper.requestFullscreen) wrapper.requestFullscreen();
+        });
+      } else if (video.webkitRequestFullscreen) {
+        video.webkitRequestFullscreen();
+      }
+      
+      // Tenta girar para paisagem automaticamente se a tela permitir
+      try {
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock('landscape').catch(() => {});
+        }
+      } catch (e) {}
     }
   }
 
@@ -525,6 +528,9 @@
     dom.btnPrev.addEventListener('click', () => playChannel(currentChannelIndex - 1));
     dom.btnNext.addEventListener('click', () => playChannel(currentChannelIndex + 1));
     dom.btnFullscreen.addEventListener('click', toggleFullscreen);
+    if (dom.btnFullscreenStrip) {
+      dom.btnFullscreenStrip.addEventListener('click', toggleFullscreen);
+    }
     dom.btnPip.addEventListener('click', togglePip);
     dom.btnReload.addEventListener('click', () => playChannel(currentChannelIndex));
     dom.btnAspect.addEventListener('click', cycleAspectRatio);
@@ -549,6 +555,17 @@
       if (e.target === dom.controlsOverlay || e.target.closest('.controls-center-bar')) {
         scheduleControlsHide();
       }
+    });
+
+    // Duplo toque no vídeo para Tela Cheia instantânea
+    let lastTapTime = 0;
+    dom.controlsOverlay.addEventListener('touchend', (e) => {
+      const now = Date.now();
+      if (now - lastTapTime < 300) {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+      lastTapTime = now;
     });
 
     // Pesquisa

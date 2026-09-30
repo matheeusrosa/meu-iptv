@@ -319,3 +319,27 @@
 .channel-fav-btn.favorited {
   color: var(--warning);
 }
+
+/* --- RESPONSIVIDADE PARA CELULARES E TELAS MENORES --- */
+@media (max-width: 900px) {
+  #sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 85vw;
+    max-width: 360px;
+    z-index: 1000;
+    box-shadow: -10px 0 35px rgba(0, 0, 0, 0.85);
+  }
+
+  #sidebar.collapsed {
+    transform: translateX(105%);
+    margin-right: 0;
+  }
+
+  .player-viewport {
+    width: 100vw !important;
+    height: 100vh !important;
+  }
+}

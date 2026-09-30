@@ -210,30 +210,10 @@ function rewriteM3U8(content, baseUrl, proxyPrefix) {
   return out.join('\n');
 }
 
-// Cache de histórico DVR em memória (mantém até 60 segmentos recentes em RAM para retrocesso imediato sem 404)
-const segmentCache = new Map();
-const MAX_CACHED_SEGMENTS = 60;
-
-// Manipulador de Proxy Inteligente de Alta Velocidade
+// Manipulador de Proxy Inteligente de Alta Velocidade (Direct Stream Pipeline)
 async function handleStreamProxy(req, res, targetUrl) {
   if (!targetUrl) {
     return sendJSON(res, 400, { error: 'Parâmetro "url" é obrigatório.' });
-  }
-
-  // Se o segmento já estiver no nosso backup local em memória, serve instantaneamente em 0ms
-  const isVideoSegment = targetUrl.includes('.ts') || targetUrl.includes('.m4s') || targetUrl.includes('/hls/');
-  if (isVideoSegment && segmentCache.has(targetUrl)) {
-    const cached = segmentCache.get(targetUrl);
-    res.writeHead(200, {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
-      'Access-Control-Allow-Headers': '*',
-      'Content-Type': cached.contentType || 'video/mp2t',
-      'Content-Length': cached.buffer.length,
-      'Cache-Control': 'public, max-age=86400, immutable',
-      'X-Proxy-Cache': 'HIT-DVR-MEMORY'
-    });
-    return res.end(cached.buffer);
   }
 
   let upstreamResponse = null;
@@ -287,32 +267,13 @@ async function handleStreamProxy(req, res, targetUrl) {
         if (!res.headersSent) sendJSON(res, 502, { error: err.message });
       });
     } else {
-      // Segmento binário (.ts, .key, .m4s) - grava no backup de memória DVR e entrega ao player
-      const chunks = [];
-      upstreamRes.on('data', chunk => chunks.push(chunk));
-      upstreamRes.on('end', () => {
-        try {
-          if (upstreamRes.statusCode === 200 && chunks.length > 0) {
-            const fullBuffer = Buffer.concat(chunks);
-            if (segmentCache.size >= MAX_CACHED_SEGMENTS) {
-              const oldestKey = segmentCache.keys().next().value;
-              segmentCache.delete(oldestKey);
-            }
-            segmentCache.set(targetUrl, {
-              buffer: fullBuffer,
-              contentType: upstreamRes.headers['content-type'] || 'video/mp2t'
-            });
-          }
-        } catch (e) {}
-      });
-
+      // Segmento binário (.ts, .key, .m4s) - repassa diretamente sem reter RAM ou congelar o fluxo
       const responseHeaders = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
         'Access-Control-Allow-Headers': '*',
         'Content-Type': upstreamRes.headers['content-type'] || 'video/mp2t',
-        // Segmentos são imutáveis: permite cache de 24h para navegação instantânea e zero re-download
-        'Cache-Control': 'public, max-age=86400, immutable'
+        'Cache-Control': 'public, max-age=60'
       };
 
       if (upstreamRes.headers['content-length']) responseHeaders['Content-Length'] = upstreamRes.headers['content-length'];
@@ -472,6 +433,17 @@ const server = http.createServer((req, res) => {
     const mobileUrl = `http://${host}/mobile`;
     res.writeHead(302, {
       'Location': `https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=10&data=${encodeURIComponent(mobileUrl)}`,
+      'Access-Control-Allow-Origin': '*'
+    });
+    return res.end();
+  }
+
+  // Detecção Inteligente de Celular na Raiz: Redireciona automaticamente para a interface mobile dedicada
+  const ua = req.headers['user-agent'] || '';
+  const isMobileClient = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(ua);
+  if ((pathname === '/' || pathname === '/index.html') && isMobileClient && !searchParams.has('desktop')) {
+    res.writeHead(302, {
+      'Location': '/mobile',
       'Access-Control-Allow-Origin': '*'
     });
     return res.end();

@@ -197,27 +197,13 @@ class StreamPlayer {
       });
 
       hls.on(window.Hls.Events.ERROR, (event, data) => {
-        // Auto-recuperação inteligente de micro-travamentos de buffer
+        // Recuperação natural estilo YouTube: deixa o buffer carregar sem saltos artificiais
         if (data.details === window.Hls.ErrorDetails.BUFFER_STALLED_ERROR) {
-          console.warn('[Player] Micro-travamento de buffer detectado. Destravando fluxo suavemente...');
-          const buffered = this.video.buffered;
-          let hasBufferAhead = false;
-          for (let i = 0; i < buffered.length; i++) {
-            if (buffered.start(i) <= this.video.currentTime && buffered.end(i) > this.video.currentTime + 0.1) {
-              hasBufferAhead = true;
-              break;
-            }
-          }
-          if (hasBufferAhead) {
-            this.video.currentTime += 0.1;
-          } else if (this.hls) {
-            this.hls.startLoad();
-          }
+          if (this.hls) this.hls.startLoad();
           return;
         }
 
         if (data.details === window.Hls.ErrorDetails.BUFFER_SEEK_OVER_HOLE) {
-          console.log('[Player] Ajustando sincronização sobre salto de segmento...');
           return;
         }
 

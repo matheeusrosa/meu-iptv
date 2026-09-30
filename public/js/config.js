@@ -22,36 +22,32 @@ const IPTV_CONFIG = {
     { id: 'fit-fill', label: 'Esticar Tela' },
     { id: 'fit-cover', label: 'Preencher (Zoom)' }
   ],
-  // Configuração Anti-Travamento, Anti-Distorção e DVR da Engine HLS
+  // Configuração Estilo YouTube: Estabilidade Máxima, Super Buffer Contínuo e Zero Saltos
   hlsOptions: {
     enableWorker: true,
-    lowLatencyMode: false,         // Desativado: Modo de baixa latência agressivo causa engasgos em Wi-Fi oscilante
-    backBufferLength: 120,         // Retém até 2 minutos de histórico recente para retorno suave
-    maxBufferLength: 30,           // Mantém até 30s de buffer pré-carregado à frente
-    maxMaxBufferLength: 60,        // Teto de 60s para absorver qualquer lentidão ou oscilação da operadora
-    maxBufferSize: 60 * 1000 * 1000,
-    startLevel: -1,                // Auto ABR com perfil HD estável
-    capLevelToPlayerSize: true,    // Ajusta o bitrate de acordo com a resolução real da tela
-    abrBandWidthFactor: 0.70,      // Margem de segurança de 30% de folga na banda contra oscilações de rede
-    abrBandWidthUpFactor: 0.50,    // Subida conservadora: só sobe se a conexão for 100% estável
-    abrEwmaDefaultEstimate: 2000000,// Inicia estimando 2.0 Mbps para carregamento rápido
-    abrEwmaFastLive: 3.0,
-    abrEwmaSlowLive: 9.0,          // Média móvel suave que evita troca histérica de qualidade
-    startFragPrefetch: true,       // Pré-carrega o próximo segmento sem gerar pausas
-    progressive: false,            // Garante integridade dos pacotes MPEG-TS (elimina o efeito embaralhado)
-    manifestLoadingTimeOut: 15000,
-    manifestLoadingMaxRetry: 5,
-    manifestLoadingRetryDelay: 500,
-    levelLoadingTimeOut: 15000,
-    levelLoadingMaxRetry: 5,
-    fragLoadingTimeOut: 18000,
-    fragLoadingMaxRetry: 6,
-    fragLoadingRetryDelay: 600,
-    liveSyncDurationCount: 3,      // Sincronização inteligente a 3 segmentos da borda ao vivo (compatível com todas as emissoras)
-    liveMaxLatencyDurationCount: 8,// Auto-reconexão inteligente à transmissão caso a internet oscile
-    maxLiveSyncPlaybackRate: 1.1,  // Suave recuperação de atraso sem saltos bruscos
-    liveDurationInfinity: true,    // Trata como DVR contínuo
-    nudgeOffset: 0.2,              // Salta pequenas lacunas de timestamps do sinal da emissora
-    nudgeMaxRetry: 10
+    lowLatencyMode: false,
+    backBufferLength: 60,          // Retém 1 minuto de histórico em RAM
+    maxBufferLength: 90,           // Puxa e acumula até 90 segundos de buffer à frente da transmissão
+    maxMaxBufferLength: 180,       // Teto elástico de até 180 segundos para reter o máximo de sinal
+    maxBufferSize: 120 * 1000 * 1000, // Permite até 120 MB de reserva de vídeo na memória
+    highBufferWatchdogPeriod: 1,   // Monitora a saúde do buffer a cada 1 segundo (alimentação contínua)
+    startLevel: -1,                // Auto ABR adaptativo
+    capLevelToPlayerSize: false,   // Máxima resolução disponível sem restrição
+    startFragPrefetch: true,       // Pré-carrega o próximo segmento continuamente sem pausas
+    progressive: false,
+    manifestLoadingTimeOut: 20000,
+    manifestLoadingMaxRetry: 8,
+    manifestLoadingRetryDelay: 800,
+    levelLoadingTimeOut: 20000,
+    levelLoadingMaxRetry: 8,
+    fragLoadingTimeOut: 25000,
+    fragLoadingMaxRetry: 10,
+    fragLoadingRetryDelay: 1000,
+    liveSyncDurationCount: 3,      // Inicia a 3 segmentos da borda ao vivo
+    liveMaxLatencyDuration: Infinity,      // Estilo YouTube: Se cair 5s, mantém 5s atrás sem pular ou engasgar
+    liveMaxLatencyDurationCount: Infinity, // Nunca força avanço automático abrupto
+    maxLiveSyncPlaybackRate: 1.0,  // Velocidade SEMPRE normal (1.0x) - sem acelerar áudio nem vídeo
+    liveDurationInfinity: true,    // Trata como streaming contínuo sem fim
+    nudgeMaxRetry: 0               // Desativa saltos forçados de timestamp (elimina vai-e-volta)
   }
 };
