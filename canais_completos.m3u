@@ -1,0 +1,151 @@
+#EXTM3U
+#EXTINF:-1 tvg-name="Rede Globo HD" tvg-logo="https://tse2.mm.bing.net/th?q=Rede%20Globo%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",Rede Globo HD
+https://media2.cdntvms.com.br/tv_morena_dorados/tracks-v1a1/mono.m3u8
+#EXTINF:-1 tvg-name="Rede Globo São Paulo HD" tvg-logo="https://tse2.mm.bing.net/th?q=Rede%20Globo%20Sao%20Paulo%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",Rede Globo São Paulo HD
+http://up.kiwi/live/351921603109/34939156/296729.m3u8
+#EXTINF:-1 tvg-name="Rede Globo Pará (TV Liberal Belém) HD" tvg-logo="https://tse2.mm.bing.net/th?q=TV%20Liberal%20Rede%20Globo%20Para%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",Rede Globo Pará (TV Liberal Belém) HD
+http://up.kiwi/live/351921603109/34939156/296819.m3u8
+#EXTINF:-1 tvg-name="Rede Globo SP (EPTV Campinas) HD" tvg-logo="https://tse2.mm.bing.net/th?q=EPTV%20Campinas%20Globo%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",Rede Globo SP (EPTV Campinas) HD
+http://up.kiwi/live/351921603109/34939156/296700.m3u8
+#EXTINF:-1 tvg-name="Rede Globo SP (TV Tribuna Santos) HD" tvg-logo="https://tse2.mm.bing.net/th?q=TV%20Tribuna%20Santos%20Globo%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",Rede Globo SP (TV Tribuna Santos) HD
+http://up.kiwi/live/351921603109/34939156/296748.m3u8
+#EXTINF:-1 tvg-name="Rede Globo SP (TV Vanguarda) HD" tvg-logo="https://tse2.mm.bing.net/th?q=TV%20Vanguarda%20Globo%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",Rede Globo SP (TV Vanguarda) HD
+http://up.kiwi/live/351921603109/34939156/296775.m3u8
+#EXTINF:-1 tvg-name="TV Paraense HD (Castanhal - Pará)" tvg-logo="https://tse2.mm.bing.net/th?q=TV%20Paraense%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",TV Paraense HD (Castanhal - Pará)
+https://video09.logicahost.com.br/tvparaense/tvparaense/playlist.m3u
+#EXTINF:-1 tvg-name="SBT Nacional HD" tvg-logo="https://tse2.mm.bing.net/th?q=SBT%20Nacional%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",SBT Nacional HD
+http://up.kiwi/live/351921603109/34939156/296862.m3u8
+#EXTINF:-1 tvg-name="Record TV HD" tvg-logo="https://tse2.mm.bing.net/th?q=Record%20TV%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",Record TV HD
+https://media.cdntvms.com.br/record_nacional_sat/index.m3u8
+#EXTINF:-1 tvg-name="Band TV HD" tvg-logo="https://tse2.mm.bing.net/th?q=Band%20TV%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",Band TV HD
+https://media.cdntvms.com.br/band_sat/index.m3u8
+#EXTINF:-1 tvg-name="TV Cultura HD" tvg-logo="https://tse2.mm.bing.net/th?q=TV%20Cultura%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",TV Cultura HD
+https://fpa-gateway.tvcultura.com.br:8181/memfs/606caef0-a290-413d-9f1f-8fcdb3a73831.m3u8
+#EXTINF:-1 tvg-name="RedeTV! HD" tvg-logo="https://tse2.mm.bing.net/th?q=RedeTV%21%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",RedeTV! HD
+http://45.162.64.114/REDE_TV/index.m3u8
+#EXTINF:-1 tvg-name="TV Gazeta HD" tvg-logo="https://tse2.mm.bing.net/th?q=TV%20Gazeta%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",TV Gazeta HD
+http://45.162.64.114/GAZETA/index.m3u8
+#EXTINF:-1 tvg-name="TV Brasil HD" tvg-logo="https://tse2.mm.bing.net/th?q=TV%20Brasil%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",TV Brasil HD
+http://45.162.64.114/TV_BRASIL/index.m3u8
+#EXTINF:-1 tvg-name="TV Senado HD" tvg-logo="https://tse2.mm.bing.net/th?q=TV%20Senado%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",TV Senado HD
+http://45.162.64.114/TV_SENADO/index.m3u8
+#EXTINF:-1 tvg-name="TV Câmara Federal HD" tvg-logo="https://tse2.mm.bing.net/th?q=TV%20C%C3%A2mara%20Federal%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",TV Câmara Federal HD
+http://45.162.64.114/TV_CAMARA/index.m3u8
+#EXTINF:-1 tvg-name="Canal Gov HD" tvg-logo="https://tse2.mm.bing.net/th?q=Canal%20Gov%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",Canal Gov HD
+http://45.177.114.115/TV_BRASIL_2/index.m3u8
+#EXTINF:-1 tvg-name="Canal Educação HD" tvg-logo="https://tse2.mm.bing.net/th?q=Canal%20Educa%C3%A7%C3%A3o%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",Canal Educação HD
+https://canaleducacao-stream.ebc.com.br/index.m3u8
+#EXTINF:-1 tvg-name="Rede Brasil HD" tvg-logo="https://tse2.mm.bing.net/th?q=Rede%20Brasil%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",Rede Brasil HD
+http://up.kiwi/live/351921603109/34939156/1112.m3u8
+#EXTINF:-1 tvg-name="History Channel HD" tvg-logo="https://tse2.mm.bing.net/th?q=History%20Channel%20canal%20tv%20logo%20png%20transparent" group-title="History & Discovery",History Channel HD
+http://45.177.114.114/HISTORY/tracks-v3a1/mono.m3u8
+#EXTINF:-1 tvg-name="History 2 (H2) HD" tvg-logo="https://tse2.mm.bing.net/th?q=History%202%20%28H2%29%20canal%20tv%20logo%20png%20transparent" group-title="History & Discovery",History 2 (H2) HD
+http://45.177.114.114/HISTORY_2/tracks-v3a1/mono.m3u8
+#EXTINF:-1 tvg-name="Discovery Channel HD" tvg-logo="https://tse2.mm.bing.net/th?q=Discovery%20Channel%20canal%20tv%20logo%20png%20transparent" group-title="History & Discovery",Discovery Channel HD
+http://45.177.114.114/DISCOVERY_CHANNEL/tracks-v3a1/mono.m3u8
+#EXTINF:-1 tvg-name="Discovery Turbo HD" tvg-logo="https://tse2.mm.bing.net/th?q=Discovery%20Turbo%20canal%20tv%20logo%20png%20transparent" group-title="History & Discovery",Discovery Turbo HD
+http://45.177.114.114/DISCOVERY_TURBO/tracks-v3a1/mono.m3u8
+#EXTINF:-1 tvg-name="Discovery Kids HD" tvg-logo="https://tse2.mm.bing.net/th?q=Discovery%20Kids%20canal%20tv%20logo%20png%20transparent" group-title="History & Discovery",Discovery Kids HD
+http://45.177.114.114/DISCOVERY_KIDS/index.m3u8
+#EXTINF:-1 tvg-name="Discovery Science HD" tvg-logo="https://tse2.mm.bing.net/th?q=Discovery%20Science%20canal%20tv%20logo%20png%20transparent" group-title="History & Discovery",Discovery Science HD
+http://45.177.114.114/DISCOVERY_SCIENCE/tracks-v3a1/mono.m3u8
+#EXTINF:-1 tvg-name="Discovery World HD" tvg-logo="https://tse2.mm.bing.net/th?q=Discovery%20World%20canal%20tv%20logo%20png%20transparent" group-title="History & Discovery",Discovery World HD
+http://45.177.114.114/DISCOVERY_WORLD/tracks-v3a1/mono.m3u8
+#EXTINF:-1 tvg-name="Discovery Theater HD" tvg-logo="https://tse2.mm.bing.net/th?q=Discovery%20Theater%20canal%20tv%20logo%20png%20transparent" group-title="History & Discovery",Discovery Theater HD
+http://45.177.114.114/DISCOVERY_THEATER/tracks-v3a1/mono.m3u8
+#EXTINF:-1 tvg-name="Animal Planet HD" tvg-logo="https://tse2.mm.bing.net/th?q=Animal%20Planet%20canal%20tv%20logo%20png%20transparent" group-title="History & Discovery",Animal Planet HD
+http://45.177.114.114/ANIMAL_PLANET/tracks-v3a1/mono.m3u8
+#EXTINF:-1 tvg-name="NASA TV HD (Ciência e Espaço)" tvg-logo="https://tse2.mm.bing.net/th?q=NASA%20TV%20%28Ci%C3%AAncia%20e%20Espa%C3%A7o%29%20canal%20tv%20logo%20png%20transparent" group-title="History & Discovery",NASA TV HD (Ciência e Espaço)
+https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8
+#EXTINF:-1 tvg-name="ge Fast (Globo Esporte 1080p) HD" tvg-logo="https://tse2.mm.bing.net/th?q=ge%20Fast%20%28Globo%20Esporte%201080p%29%20canal%20tv%20logo%20png%20transparent" group-title="Canais Globo & Esportes",ge Fast (Globo Esporte 1080p) HD
+https://amg00716-globo-amg00716c1-tcl-br-9495.playouts.now.amagi.tv/playlist.m3u8
+#EXTINF:-1 tvg-name="SporTV HD" tvg-logo="https://tse2.mm.bing.net/th?q=SporTV%20canal%20tv%20logo%20png%20transparent" group-title="Canais Globo & Esportes",SporTV HD
+http://181.78.197.59:8000/play/a078/index.m3u8
+#EXTINF:-1 tvg-name="SporTV 2 HD" tvg-logo="https://tse2.mm.bing.net/th?q=SporTV%202%20canal%20tv%20logo%20png%20transparent" group-title="Canais Globo & Esportes",SporTV 2 HD
+http://181.78.197.59:8000/play/a079/index.m3u8
+#EXTINF:-1 tvg-name="SporTV 3 HD" tvg-logo="https://tse2.mm.bing.net/th?q=SporTV%203%20canal%20tv%20logo%20png%20transparent" group-title="Canais Globo & Esportes",SporTV 3 HD
+http://181.78.197.59:8000/play/a080/index.m3u8
+#EXTINF:-1 tvg-name="ESPN Brasil HD" tvg-logo="https://tse2.mm.bing.net/th?q=ESPN%20Brasil%20canal%20tv%20logo%20png%20transparent" group-title="Canais Globo & Esportes",ESPN Brasil HD
+http://45.162.64.114/ESPN_BRASIL/index.m3u8
+#EXTINF:-1 tvg-name="ESPN 3 HD" tvg-logo="https://tse2.mm.bing.net/th?q=ESPN%203%20canal%20tv%20logo%20png%20transparent" group-title="Canais Globo & Esportes",ESPN 3 HD
+http://181.78.197.59:8000/play/a081/index.m3u8
+#EXTINF:-1 tvg-name="Fox Sports / ESPN 4 HD" tvg-logo="https://tse2.mm.bing.net/th?q=Fox%20Sports%20/%20ESPN%204%20canal%20tv%20logo%20png%20transparent" group-title="Canais Globo & Esportes",Fox Sports / ESPN 4 HD
+http://45.162.64.114/ESPN_4/index.m3u8
+#EXTINF:-1 tvg-name="Premiere Clubes HD" tvg-logo="https://tse2.mm.bing.net/th?q=Premiere%20Clubes%20canal%20tv%20logo%20png%20transparent" group-title="Canais Globo & Esportes",Premiere Clubes HD
+https://jmp2.uk/plu-6806d62369aec5b19cd628c0.m3u8
+#EXTINF:-1 tvg-name="Combate HD / MMA TV" tvg-logo="https://tse2.mm.bing.net/th?q=Combate%20/%20MMA%20TV%20canal%20tv%20logo%20png%20transparent" group-title="Canais Globo & Esportes",Combate HD / MMA TV
+https://jmp2.uk/plu-5f32d2db0af67400077f29c4.m3u8
+#EXTINF:-1 tvg-name="FIFA+ HD" tvg-logo="https://tse2.mm.bing.net/th?q=FIFA%2B%20canal%20tv%20logo%20png%20transparent" group-title="Canais Globo & Esportes",FIFA+ HD
+https://jmp2.uk/plu-66997e8d3a4ad20008e50be9.m3u8
+#EXTINF:-1 tvg-name="Red Bull TV HD" tvg-logo="https://tse2.mm.bing.net/th?q=Red%20Bull%20TV%20canal%20tv%20logo%20png%20transparent" group-title="Canais Globo & Esportes",Red Bull TV HD
+https://jmp2.uk/plu-67813f3162bf016db944c9ab.m3u8
+#EXTINF:-1 tvg-name="WooHoo (Esportes Radicais)" tvg-logo="https://tse2.mm.bing.net/th?q=WooHoo%20%28Esportes%20Radicais%29%20canal%20tv%20logo%20png%20transparent" group-title="Canais Globo & Esportes",WooHoo (Esportes Radicais)
+http://45.162.64.114/WOOHOO/index.m3u8
+#EXTINF:-1 tvg-name="Megapix HD" tvg-logo="https://tse2.mm.bing.net/th?q=Megapix%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",Megapix HD
+https://jmp2.uk/plu-61b790b985706b00072cb797.m3u8
+#EXTINF:-1 tvg-name="Telecine Premium HD" tvg-logo="https://tse2.mm.bing.net/th?q=Telecine%20Premium%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",Telecine Premium HD
+https://jmp2.uk/plu-5f120e94a5714d00074576a1.m3u8
+#EXTINF:-1 tvg-name="Telecine Action HD" tvg-logo="https://tse2.mm.bing.net/th?q=Telecine%20Action%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",Telecine Action HD
+https://jmp2.uk/plu-5f120f41b7d403000783a6d6.m3u8
+#EXTINF:-1 tvg-name="Telecine Pipoca HD" tvg-logo="https://tse2.mm.bing.net/th?q=Telecine%20Pipoca%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",Telecine Pipoca HD
+https://jmp2.uk/plu-62545ed3dab4380007582f7c.m3u8
+#EXTINF:-1 tvg-name="Telecine Touch HD" tvg-logo="https://tse2.mm.bing.net/th?q=Telecine%20Touch%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",Telecine Touch HD
+https://jmp2.uk/plu-5f171f988ab9780007fa95ea.m3u8
+#EXTINF:-1 tvg-name="Telecine Fun HD" tvg-logo="https://tse2.mm.bing.net/th?q=Telecine%20Fun%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",Telecine Fun HD
+https://jmp2.uk/plu-5f12101f0b12f00007844c7c.m3u8
+#EXTINF:-1 tvg-name="Telecine Cult HD" tvg-logo="https://tse2.mm.bing.net/th?q=Telecine%20Cult%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",Telecine Cult HD
+https://jmp2.uk/plu-5fa1612a669ba0000702017b.m3u8
+#EXTINF:-1 tvg-name="TNT HD" tvg-logo="https://tse2.mm.bing.net/th?q=TNT%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",TNT HD
+http://45.162.64.114/TNT/index.m3u8
+#EXTINF:-1 tvg-name="Space HD" tvg-logo="https://tse2.mm.bing.net/th?q=Space%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",Space HD
+http://45.162.64.114/SPACE/index.m3u8
+#EXTINF:-1 tvg-name="Sony Movies HD" tvg-logo="https://tse2.mm.bing.net/th?q=Sony%20Movies%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",Sony Movies HD
+http://45.162.64.114/SONY_MOVIES/index.m3u8
+#EXTINF:-1 tvg-name="Adrenalina Pura HD" tvg-logo="https://images.pluto.tv/channels/61b790b985706b00072cb797/colorLogoPNG.png" group-title="Filmes & Cinema",Adrenalina Pura HD
+https://jmp2.uk/plu-61b790b985706b00072cb797.m3u8
+#EXTINF:-1 tvg-name="Canal Fox HD (Os Simpsons)" tvg-logo="https://tse2.mm.bing.net/th?q=Canal%20Fox%20%28Os%20Simpsons%29%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",Canal Fox HD (Os Simpsons)
+http://138.121.15.230:9002/STAR-CHANNEL/tracks-v1a1/mono.m3u8
+#EXTINF:-1 tvg-name="FX HD (Fox FX)" tvg-logo="https://tse2.mm.bing.net/th?q=FX%20%28Fox%20FX%29%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",FX HD (Fox FX)
+http://138.121.15.230:9002/FX/tracks-v1a1/mono.m3u8
+#EXTINF:-1 tvg-name="Cinecanal HD (Fox Life)" tvg-logo="https://tse2.mm.bing.net/th?q=Cinecanal%20%28Fox%20Life%29%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",Cinecanal HD (Fox Life)
+http://138.121.15.230:9002/CINECANAL/index.m3u8
+#EXTINF:-1 tvg-name="Warner Channel HD" tvg-logo="https://tse2.mm.bing.net/th?q=Warner%20Channel%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",Warner Channel HD
+http://45.177.114.115/WARNER_CHANNEL/index.m3u8
+#EXTINF:-1 tvg-name="Sony Channel HD" tvg-logo="https://tse2.mm.bing.net/th?q=Sony%20Channel%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",Sony Channel HD
+http://138.121.15.230:9002/SONY/index.m3u8
+#EXTINF:-1 tvg-name="AXN HD" tvg-logo="https://tse2.mm.bing.net/th?q=AXN%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",AXN HD
+http://138.121.15.230:9002/AXN/index.m3u8
+#EXTINF:-1 tvg-name="Universal TV HD" tvg-logo="https://tse2.mm.bing.net/th?q=Universal%20TV%20canal%20tv%20logo%20png%20transparent" group-title="Filmes & Cinema",Universal TV HD
+http://138.121.15.230:9002/UNIVERSAL-CHANNEL/index.m3u8
+#EXTINF:-1 tvg-name="Cine Sucessos HD" tvg-logo="https://images.pluto.tv/channels/5f120e94a5714d00074576a1/colorLogoPNG.png" group-title="Filmes & Cinema",Cine Sucessos HD
+https://jmp2.uk/plu-5f120e94a5714d00074576a1.m3u8
+#EXTINF:-1 tvg-name="Canal Futura (Globo / FRM)" tvg-logo="https://tse2.mm.bing.net/th?q=Canal%20Futura%20%28Globo%20/%20FRM%29%20canal%20tv%20logo%20png%20transparent" group-title="Globosat & Variedades",Canal Futura (Globo / FRM)
+http://45.162.64.114/FUTURA/index.m3u8
+#EXTINF:-1 tvg-name="GloboNews Ao Vivo HD" tvg-logo="https://tse2.mm.bing.net/th?q=GloboNews%20canal%20tv%20logo%20png%20transparent" group-title="Globosat & Variedades",GloboNews Ao Vivo HD
+http://up.kiwi/live/351921603109/34939156/296342.m3u8
+#EXTINF:-1 tvg-name="Multishow HD" tvg-logo="https://tse2.mm.bing.net/th?q=Multishow%20canal%20tv%20logo%20png%20transparent" group-title="Globosat & Variedades",Multishow HD
+https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01131-tracetv-tracebrazuca-samsungbr/playlist.m3u8
+#EXTINF:-1 tvg-name="GNT HD / Gastronomia" tvg-logo="https://tse2.mm.bing.net/th?q=GNT%20/%20Gastronomia%20canal%20tv%20logo%20png%20transparent" group-title="Globosat & Variedades",GNT HD / Gastronomia
+https://jmp2.uk/plu-5fd1419a3b4f4b000773ba85.m3u8
+#EXTINF:-1 tvg-name="Viva HD (Novelas & Clássicos)" tvg-logo="https://tse2.mm.bing.net/th?q=Viva%20%28Novelas%20%26%20Cl%C3%A1ssicos%29%20canal%20tv%20logo%20png%20transparent" group-title="Globosat & Variedades",Viva HD (Novelas & Clássicos)
+http://45.162.64.114/TNT_NOVELAS/index.m3u8
+#EXTINF:-1 tvg-name="TNT Novelas HD" tvg-logo="https://tse2.mm.bing.net/th?q=TNT%20Novelas%20canal%20tv%20logo%20png%20transparent" group-title="Globosat & Variedades",TNT Novelas HD
+http://45.162.64.114/TNT_NOVELAS/index.m3u8
+#EXTINF:-1 tvg-name="Cartoon Network HD" tvg-logo="https://tse2.mm.bing.net/th?q=Cartoon%20Network%20canal%20tv%20logo%20png%20transparent" group-title="Infantil & Cultura",Cartoon Network HD
+http://45.162.64.114/CARTOON_NETWORK/index.m3u8
+#EXTINF:-1 tvg-name="Turma da Mônica HD" tvg-logo="https://images.pluto.tv/channels/5f997e44949bc70007a6941e/colorLogoPNG.png" group-title="Infantil & Cultura",Turma da Mônica HD
+https://jmp2.uk/plu-5f997e44949bc70007a6941e.m3u8
+#EXTINF:-1 tvg-name="Bob Esponja Calça Quadrada HD" tvg-logo="https://images.pluto.tv/channels/62545c0b002f4b0007688b61/colorLogoPNG.png" group-title="Infantil & Cultura",Bob Esponja Calça Quadrada HD
+https://jmp2.uk/plu-62545c0b002f4b0007688b61.m3u8
+#EXTINF:-1 tvg-name="Boomerang / Cartoonito HD" tvg-logo="https://tse2.mm.bing.net/th?q=Boomerang%20/%20Cartoonito%20canal%20tv%20logo%20png%20transparent" group-title="Infantil & Cultura",Boomerang / Cartoonito HD
+http://45.162.64.114/BOOMERANG/index.m3u8
+#EXTINF:-1 tvg-name="ZooMoo Kids HD" tvg-logo="https://tse2.mm.bing.net/th?q=ZooMoo%20Kids%20canal%20tv%20logo%20png%20transparent" group-title="Infantil & Cultura",ZooMoo Kids HD
+http://45.162.64.114/ZOOMOO_KIDS/index.m3u8
+#EXTINF:-1 tvg-name="BabyFirst Kids Brasil" tvg-logo="https://images.pluto.tv/channels/5f4fb4cf605ddf000748e16f/colorLogoPNG.png" group-title="Infantil & Cultura",BabyFirst Kids Brasil
+https://jmp2.uk/plu-5f4fb4cf605ddf000748e16f.m3u8
+#EXTINF:-1 tvg-name="Arte 1 (Cinema & Cultura)" tvg-logo="https://tse2.mm.bing.net/th?q=Arte%201%20%28Cinema%20%26%20Cultura%29%20canal%20tv%20logo%20png%20transparent" group-title="Infantil & Cultura",Arte 1 (Cinema & Cultura)
+http://45.162.64.114/ARTE1/index.m3u8
+#EXTINF:-1 tvg-name="Play TV (Games & Cultura Pop)" tvg-logo="https://tse2.mm.bing.net/th?q=Play%20TV%20%28Games%20%26%20Cultura%20Pop%29%20canal%20tv%20logo%20png%20transparent" group-title="Infantil & Cultura",Play TV (Games & Cultura Pop)
+http://45.162.64.114/PLAY_TV/index.m3u8
+#EXTINF:-1 tvg-name="Record News HD" tvg-logo="https://tse2.mm.bing.net/th?q=Record%20News%20canal%20tv%20logo%20png%20transparent" group-title="TV Aberta & Nacionais",Record News HD
+https://rnw-rn.otteravision.com/rnw/rn/rnw_rn.m3u8

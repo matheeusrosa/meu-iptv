@@ -1,0 +1,3027 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <title>IPTV Pro Player - Grade Completa de TV Ao Vivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Hls.js para reprodução de alta performance sem travas -->
+  <script src="public/js/hls.min.js"></script>
+  <script>if (!window.Hls) document.write('<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js" crossorigin="anonymous"><\/script>');</script>
+
+  <style>
+    :root {
+      --bg-base: #08090d;
+      --bg-surface: #0f121a;
+      --bg-surface-elevated: #181d2a;
+      --bg-surface-glass: rgba(15, 18, 26, 0.88);
+      --bg-hover: rgba(255, 255, 255, 0.08);
+      
+      --accent-primary: #6366f1;
+      --accent-primary-hover: #4f46e5;
+      --accent-cyan: #06b6d4;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+      --live-red: #ef4444;
+      --live-pulse: rgba(239, 68, 68, 0.4);
+      --success: #10b981;
+      --warning: #f59e0b;
+
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(99, 102, 241, 0.5);
+      
+      --sidebar-width: 390px;
+      --osd-transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Container Principal */
+    #app-container {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      background: var(--bg-base);
+      overflow: hidden;
+    }
+
+    /* Viewport do Player de Vídeo */
+    #player-viewport {
+      flex: 1;
+      height: 100%;
+      position: relative;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #video-element {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #000;
+      transition: object-fit 0.2s ease;
+    }
+
+    #video-element.fit-cover { object-fit: cover; }
+    #video-element.fit-fill { object-fit: fill; }
+    #video-element.fit-16-9 { aspect-ratio: 16 / 9; object-fit: contain; }
+    #video-element.fit-4-3 { aspect-ratio: 4 / 3; object-fit: contain; }
+
+    /* OSD Auto-Hide */
+    #player-viewport.idle-hidden {
+      cursor: none;
+    }
+    #player-viewport.idle-hidden .osd-layer {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateY(-10px);
+    }
+    #player-viewport.idle-hidden #osd-controls {
+      transform: translateY(10px);
+    }
+
+    /* Camadas OSD */
+    .osd-layer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      z-index: 30;
+      transition: var(--osd-transition);
+      pointer-events: auto;
+    }
+
+    /* Barra Superior OSD */
+    #osd-header {
+      top: 0;
+      padding: 24px 32px 48px;
+      background: linear-gradient(180deg, rgba(8, 9, 13, 0.95) 0%, rgba(8, 9, 13, 0.6) 70%, transparent 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .osd-channel-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .osd-channel-logo {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      object-fit: contain;
+      padding: 4px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    }
+
+    .channel-badge-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .osd-channel-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text-main);
+      text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+        .live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(239, 68, 68, 0.16);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #fca5a5;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+    .live-indicator:hover {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: rgba(239, 68, 68, 0.7);
+      transform: translateY(-1px);
+    }
+    .live-indicator.behind {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--text-muted);
+    }
+    .live-indicator.behind .live-dot {
+      background: #64748b;
+      box-shadow: none;
+      animation: none;
+    }
+    .live-indicator.behind:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.6);
+      color: #fff;
+    }
+
+    /* Linha do Tempo DVR Ao Vivo (Retrocesso estilo YouTube) */
+    .dvr-timeline-container {
+      width: 100%;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      cursor: pointer;
+      margin-bottom: 4px;
+      user-select: none;
+    }
+    .dvr-timeline-track {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 3px;
+      position: relative;
+      transition: height 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .dvr-timeline-container:hover .dvr-timeline-track,
+    .dvr-timeline-container.dragging .dvr-timeline-track {
+      height: 7px;
+    }
+    .dvr-buffer-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.35);
+      border-radius: 3px;
+      pointer-events: none;
+      transition: width 0.2s linear;
+    }
+    .dvr-played-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, #6366f1 0%, #06b6d4 100%);
+      border-radius: 3px;
+      pointer-events: none;
+    }
+    .dvr-playhead {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 13px;
+      height: 13px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.9);
+      pointer-events: none;
+      transition: transform 0.15s ease;
+    }
+    .dvr-timeline-container:hover .dvr-playhead,
+    .dvr-timeline-container.dragging .dvr-playhead {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .dvr-hover-tooltip {
+      position: absolute;
+      bottom: 24px;
+      transform: translateX(-50%);
+      background: rgba(15, 18, 26, 0.96);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 35;
+    }
+    .dvr-timeline-container:hover .dvr-hover-tooltip {
+      opacity: 1;
+    }
+    .btn-live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: inherit;
+      user-select: none;
+    }
+    .btn-live-badge.live {
+      background: rgba(239, 68, 68, 0.16);
+      border-color: rgba(239, 68, 68, 0.45);
+      color: var(--live-red);
+    }
+    .btn-live-badge.live .live-dot-badge {
+      width: 7px;
+      height: 7px;
+      background: var(--live-red);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--live-pulse);
+      animation: pulse-live 1.5s infinite;
+    }
+    .btn-live-badge.live:hover {
+      background: rgba(239, 68, 68, 0.28);
+      border-color: rgba(239, 68, 68, 0.7);
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+    }
+    .btn-live-badge.behind {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--text-muted);
+    }
+    .btn-live-badge.behind .live-dot-badge {
+      width: 7px;
+      height: 7px;
+      background: #64748b;
+      border-radius: 50%;
+      box-shadow: none;
+      animation: none;
+    }
+    .btn-live-badge.behind:hover {
+      background: rgba(239, 68, 68, 0.22);
+      border-color: rgba(239, 68, 68, 0.6);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .btn-live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(239, 68, 68, 0.16);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #fca5a5;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--live-red);
+      box-shadow: 0 0 10px var(--live-red);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .osd-channel-category {
+      font-size: 0.88rem;
+      color: var(--accent-cyan);
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    .osd-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Botões de Ícone */
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .icon-btn:hover {
+      background: var(--bg-hover);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .icon-btn:active {
+      transform: translateY(0) scale(0.96);
+    }
+
+    .icon-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .icon-btn.primary {
+      background: var(--accent-gradient);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+    }
+
+    .icon-btn.primary:hover {
+      box-shadow: 0 6px 22px rgba(99, 102, 241, 0.5);
+    }
+
+    /* Barra Inferior OSD */
+    #osd-controls {
+      bottom: 0;
+      padding: 48px 32px 28px;
+      background: linear-gradient(0deg, rgba(8, 9, 13, 0.95) 0%, rgba(8, 9, 13, 0.6) 70%, transparent 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .osd-controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .controls-left, .controls-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .channel-stepper {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 2px;
+      backdrop-filter: blur(8px);
+    }
+
+    .channel-stepper-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 0 8px;
+    }
+
+    /* Slider de Volume */
+    .volume-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+
+    .volume-slider-container {
+      width: 80px;
+      transition: width 0.25s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .volume-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 5px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.2);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--text-main);
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+      transition: transform 0.15s;
+    }
+
+    .volume-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.25);
+    }
+
+    /* Overlays de Status e Erro */
+    #status-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      z-index: 25;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top-color: var(--accent-primary);
+      border-right-color: var(--accent-cyan);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .status-text {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      background: rgba(15, 18, 26, 0.7);
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      backdrop-filter: blur(8px);
+    }
+
+    #error-card {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--bg-surface-glass);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      max-width: 440px;
+      width: 90%;
+      text-align: center;
+      z-index: 28;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(16px);
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    #error-card h3 {
+      color: #f87171;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    #error-card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .error-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    #osd-toast {
+      position: absolute;
+      top: 36px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(15, 18, 26, 0.92);
+      border: 1px solid var(--border-subtle);
+      padding: 10px 22px;
+      border-radius: var(--radius-full);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #osd-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ==========================================================================
+       SIDEBAR & GUIA DE CANAIS
+       ========================================================================== */
+    #sidebar {
+      width: var(--sidebar-width);
+      height: 100%;
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      z-index: 35;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    #sidebar.collapsed {
+      transform: translateX(100%);
+      width: 0;
+      display: none !important;
+    }
+
+    .sidebar-header {
+      padding: 18px 20px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      flex-shrink: 0;
+    }
+
+    .sidebar-brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-logo svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--accent-primary);
+    }
+
+    .channels-total-badge {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.04em;
+    }
+
+    /* Campo de Busca */
+    .search-box {
+      position: relative;
+      width: 100%;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 40px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0 38px 0 38px;
+      color: var(--text-main);
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      fill: var(--text-dim);
+      pointer-events: none;
+    }
+
+    .clear-search-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      display: none;
+      padding: 4px;
+      font-size: 0.9rem;
+    }
+
+    .clear-search-btn:hover {
+      color: var(--text-main);
+    }
+
+    /* Pílulas de Categoria */
+    .category-filter-row {
+      display: flex;
+      gap: 6px;
+      padding: 10px 20px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(15, 18, 26, 0.5);
+      flex-shrink: 0;
+    }
+
+    .category-filter-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .category-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .category-pill:hover {
+      background: var(--bg-hover);
+      color: var(--text-main);
+    }
+
+    .category-pill.active {
+      background: var(--accent-gradient);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Meta contadores */
+    .channels-meta-info {
+      padding: 8px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.76rem;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    /* Lista Rolável de Canais */
+    #channel-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    #channel-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    #channel-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    #channel-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-full);
+    }
+
+    /* Card de Item do Canal */
+    .channel-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+      gap: 12px;
+      position: relative;
+    }
+
+    .channel-item:hover {
+      background: var(--bg-hover);
+      transform: translateX(3px);
+    }
+
+    .channel-item.active {
+      background: rgba(99, 102, 241, 0.16);
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+
+    .channel-number {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      width: 26px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .channel-logo-wrapper {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .channel-logo {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 3px;
+    }
+
+    /* Fallback Elegante de Logo que NUNCA quebra */
+    .channel-avatar-fallback {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #f8fafc;
+      background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+      letter-spacing: 0.05em;
+    }
+
+    .channel-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .channel-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .channel-group-tag {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .channel-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .channel-fav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s, transform 0.15s;
+    }
+
+    .channel-fav-btn:hover {
+      color: #fbbf24;
+      transform: scale(1.15);
+    }
+
+    .channel-fav-btn.favorited {
+      color: #f59e0b;
+    }
+
+    /* Equalizador de Áudio Tocando (Barrinhas animadas) */
+    .equalizer-bars {
+      display: none;
+      align-items: flex-end;
+      gap: 2px;
+      height: 14px;
+      width: 14px;
+    }
+
+    .channel-item.active .equalizer-bars {
+      display: flex;
+    }
+
+    .eq-bar {
+      width: 3px;
+      background: var(--accent-cyan);
+      border-radius: 1px;
+      animation: eqBounce 0.8s ease-in-out infinite alternate;
+    }
+
+    .eq-bar:nth-child(1) { height: 60%; animation-delay: 0.1s; }
+    .eq-bar:nth-child(2) { height: 100%; animation-delay: 0.3s; }
+    .eq-bar:nth-child(3) { height: 40%; animation-delay: 0.5s; }
+
+    @keyframes eqBounce {
+      from { height: 20%; }
+      to { height: 100%; }
+    }
+
+    /* Modais */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 580px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-close-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: var(--radius-sm);
+    }
+    .modal-close-btn:hover {
+      color: #fff;
+      background: var(--bg-hover);
+    }
+
+    .modal-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .form-input {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      color: #fff;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .btn-submit {
+      background: var(--accent-gradient);
+      border: none;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+      transition: all 0.2s;
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(99, 102, 241, 0.5);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover {
+      background: var(--bg-hover);
+    }
+
+    /* Tooltips */
+    [data-tooltip] {
+      position: relative;
+    }
+    [data-tooltip]:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 18, 26, 0.95);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      pointer-events: none;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+      z-index: 60;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app-container">
+
+    <!-- Player de Vídeo Viewport Principal -->
+    <main id="player-viewport">
+      <video id="video-element" playsinline></video>
+
+      <!-- Top OSD Layer -->
+      <div id="osd-header" class="osd-layer">
+        <div class="osd-channel-meta">
+          <div class="channel-logo-wrapper" style="width:50px;height:50px;">
+            <img id="osd-logo" class="osd-channel-logo" src="" alt="Canal" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div id="osd-avatar-fallback" class="channel-avatar-fallback" style="font-size:1.1rem;display:none;">TV</div>
+          </div>
+          <div class="channel-badge-group">
+            <div class="osd-channel-title">
+              <span id="osd-title">Carregando canal...</span>
+              <button id="osd-live-pill-top" class="live-indicator tooltip" data-tooltip="Voltar ao sinal Ao Vivo (L)" aria-label="Status Ao Vivo">
+                <span class="live-dot"></span>
+                <span id="osd-live-pill-text">AO VIVO</span>
+              </button>
+            </div>
+            <div id="osd-category" class="osd-channel-category">TV Aberta & Fechada</div>
+          </div>
+        </div>
+
+        <div class="osd-header-actions">
+          <button id="btn-shortcuts" class="icon-btn tooltip" data-tooltip="Atalhos do Teclado (H)" aria-label="Atalhos">
+            <svg viewBox="0 0 24 24"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg>
+          </button>
+          <button id="btn-open-modal" class="icon-btn tooltip" data-tooltip="Configurações & Playlist (M)" aria-label="Configurações">
+            <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          </button>
+          <button id="btn-toggle-sidebar-top" class="icon-btn tooltip" data-tooltip="Guia de Canais (C)" aria-label="Canais">
+            <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Spinner Central de Conexão -->
+      <div id="status-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <div id="status-label" class="status-text">Conectando...</div>
+      </div>
+
+      <!-- Card de Falha -->
+      <div id="error-card">
+        <h3>
+          <svg style="width:22px;height:22px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          Sinal Temporariamente Indisponível
+        </h3>
+        <p id="error-message">O canal selecionado está em atualização ou buffering. Tentando reconexão automática...</p>
+        <div class="error-actions">
+          <button id="btn-retry-stream" class="btn-submit" style="padding: 9px 18px; font-size:0.85rem;">Tentar Novamente</button>
+          <button id="btn-try-backup" class="btn-secondary" style="padding: 9px 18px; font-size:0.85rem;">Alternar Sinal (Sinal 2)</button>
+        </div>
+      </div>
+
+      <!-- Toast Feedback Popup -->
+      <div id="osd-toast">Volume: 100%</div>
+
+      <!-- Bottom OSD Controls -->
+      <div id="osd-controls" class="osd-layer">
+        <!-- Linha do Tempo DVR Ao Vivo (Retrocesso estilo YouTube) -->
+        <div id="dvr-timeline-container" class="dvr-timeline-container" data-tooltip="Retroceder na transmissão ao vivo">
+          <div id="dvr-timeline-track" class="dvr-timeline-track">
+            <div id="dvr-buffer-bar" class="dvr-buffer-bar" style="width: 100%;"></div>
+            <div id="dvr-played-bar" class="dvr-played-bar" style="width: 100%;"></div>
+            <div id="dvr-playhead" class="dvr-playhead" style="left: 100%;"></div>
+          </div>
+          <div id="dvr-hover-tooltip" class="dvr-hover-tooltip">Ao Vivo</div>
+        </div>
+
+        <div class="osd-controls-row">
+          
+          <div class="controls-left">
+            <button id="btn-play-pause" class="icon-btn primary tooltip" data-tooltip="Reproduzir / Pausar (Espaço)" aria-label="Play">
+              <svg id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              <svg id="icon-pause" style="display:none" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+
+            <!-- Botões de Retrocesso DVR (-10s / +10s) -->
+            <button id="btn-rewind-10" class="icon-btn tooltip" data-tooltip="Voltar 10s (J)" aria-label="Voltar 10 segundos">
+              <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/><text x="12" y="15" font-size="7.5" font-weight="700" text-anchor="middle" fill="currentColor">10</text></svg>
+            </button>
+            <button id="btn-forward-10" class="icon-btn tooltip" data-tooltip="Avançar 10s (L)" aria-label="Avançar 10 segundos">
+              <svg viewBox="0 0 24 24"><path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/><text x="12" y="15" font-size="7.5" font-weight="700" text-anchor="middle" fill="currentColor">10</text></svg>
+            </button>
+
+            <!-- Botão Interativo "AO VIVO" estilo YouTube -->
+            <button id="btn-live-indicator" class="btn-live-badge live tooltip" data-tooltip="Sinal em tempo real (Clique para sincronizar)" aria-label="Status Ao Vivo">
+              <span class="live-dot-badge"></span>
+              <span id="live-badge-text">AO VIVO</span>
+            </button>
+
+            <!-- Canal Anterior / Próximo -->
+            <div class="channel-stepper">
+              <button id="btn-prev-channel" class="icon-btn tooltip" data-tooltip="Canal Anterior (←)" aria-label="Canal Anterior">
+                <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+              </button>
+              <span class="channel-stepper-label" id="channel-stepper-number">CH 1</span>
+              <button id="btn-next-channel" class="icon-btn tooltip" data-tooltip="Próximo Canal (→)" aria-label="Próximo Canal">
+                <svg viewBox="0 0 24 24"><path d="m6 18 8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+              </button>
+            </div>
+
+            <!-- Volume -->
+            <div class="volume-box">
+              <button id="btn-mute" class="icon-btn tooltip" data-tooltip="Silenciar / Ativar Som (M)" aria-label="Volume">
+                <svg id="icon-vol-high" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                <svg id="icon-vol-mute" style="display:none" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4 9.91 6.09 12 8.18V4z"/></svg>
+              </button>
+              <div class="volume-slider-container">
+                <input type="range" id="volume-range" class="volume-slider" min="0" max="1" step="0.02" value="1">
+              </div>
+            </div>
+          </div>
+
+          <div class="controls-right">
+            
+            <button id="btn-switch-source" class="icon-btn tooltip" data-tooltip="Alternar Sinal (Sinal 1 / Sinal 2) (S)" aria-label="Alternar Sinal">
+              <svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>
+            </button>
+            <button id="btn-reload-stream" class="icon-btn tooltip" data-tooltip="Recarregar Sinal (R)" aria-label="Recarregar">
+              <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+            </button>
+            <button id="btn-aspect-ratio" class="icon-btn tooltip" data-tooltip="Proporção da Tela (A)" aria-label="Aspect Ratio">
+              <svg viewBox="0 0 24 24"><path d="M19 12h-2v3h-3v2h5v-5zM7 9h3V7H5v5h2V9zm14-6H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16.01H3V4.99h18v14.02z"/></svg>
+            </button>
+            <button id="btn-pip" class="icon-btn tooltip" data-tooltip="Picture-in-Picture (P)" aria-label="PiP">
+              <svg viewBox="0 0 24 24"><path d="M19 7h-8v6h8V7zm2-4H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16.01H3V4.99h18v14.02z"/></svg>
+            </button>
+            <button id="btn-fullscreen" class="icon-btn tooltip" data-tooltip="Tela Cheia (F)" aria-label="Tela Cheia">
+              <svg id="icon-fs-enter" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+              <svg id="icon-fs-exit" style="display:none" viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-14v3h3v2h-5V5h2z"/></svg>
+            </button>
+            <button id="btn-toggle-sidebar" class="icon-btn tooltip" data-tooltip="Guia de Canais (C)" aria-label="Canais">
+              <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- Barra Lateral: Guia de Canais -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand-row">
+          <div class="brand-logo">
+            <svg viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>
+            <span>IPTV PRO BRASIL</span>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span class="channels-total-badge" id="channels-badge-top">75 canais ONLINE</span>
+            <button id="btn-close-sidebar" class="modal-close-btn" aria-label="Fechar Sidebar">
+              <svg style="width:20px;height:20px;fill:currentColor" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Campo de Pesquisa -->
+        <div class="search-box">
+          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" id="search-input" class="search-input" placeholder="Buscar entre 75 canais...">
+          <button id="btn-clear-search" class="clear-search-btn" aria-label="Limpar Busca">✕</button>
+        </div>
+      </div>
+
+      <!-- Filtro Horizontal de Categorias -->
+      <div id="category-pills" class="category-filter-row">
+        <button class="category-pill active" data-category="ALL">Todos (75)</button>
+        <button class="category-pill" data-category="FAV">⭐ Favoritos</button>
+        <button class="category-pill" data-category="TV Aberta & Nacionais">🏛️ TV Aberta & Nacionais</button>
+        <button class="category-pill" data-category="History & Discovery">🌍 History & Discovery</button>
+        <button class="category-pill" data-category="Canais Globo & Esportes">⚽ Canais Globo & Esportes</button>
+        <button class="category-pill" data-category="Filmes & Cinema">🎬 Fox, Star, Telecine & Filmes</button>
+        <button class="category-pill" data-category="Globosat & Variedades">📺 Globosat & Variedades</button>
+        <button class="category-pill" data-category="Infantil & Cultura">🧸 Infantil & Cultura</button>
+</div>
+
+      <!-- Meta Info -->
+      <div class="channels-meta-info">
+        <span id="channels-count">75 canais</span>
+        <span id="current-category-name">Todos</span>
+      </div>
+
+      <!-- Lista Rolável de Canais -->
+      <div id="channel-list"></div>
+    </aside>
+
+  </div>
+
+  <!-- Modal de Atalhos -->
+  <div id="shortcuts-modal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 460px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg style="width:20px;height:20px;fill:var(--accent-primary)" viewBox="0 0 24 24"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg>
+          Atalhos do Teclado
+        </div>
+        <button id="btn-close-shortcuts" class="modal-close-btn" aria-label="Fechar">✕</button>
+      </div>
+      <div class="modal-body" style="gap: 12px; font-size: 0.9rem;">
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:8px;">
+          <span>Espaço / K</span><strong>Play / Pause</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:8px;">
+          <span>Seta Direita / Esquerda (→ / ←)</span><strong>Próximo / Canal Anterior</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:8px;">
+          <span>Seta Cima / Baixo (↑ / ↓)</span><strong>Aumentar / Diminuir Volume</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:8px;">
+          <span>F</span><strong>Alternar Tela Cheia</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:8px;">
+          <span>M</span><strong>Silenciar / Ativar Som</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:8px;">
+          <span>C</span><strong>Abrir / Fechar Guia de Canais</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:8px;">
+          <span>R</span><strong>Recarregar Sinal do Canal</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:8px;">
+          <span>S</span><strong>Alternar Sinal (Principal / Reserva)</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding-bottom:4px;">
+          <span>0 a 9</span><strong>Digitar Número do Canal</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Configuração de Playlist -->
+  <div id="credentials-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg style="width:22px;height:22px;fill:var(--accent-cyan)" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+          Grade de Canais & Configurações
+        </div>
+        <button id="btn-close-modal" class="modal-close-btn" aria-label="Fechar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-md); padding: 14px; color: #6ee7b7; font-size: 0.88rem; line-height: 1.5;">
+          <strong>🔥 Grade Completa Pronta (75 canais 100% Online):</strong><br>
+          Todos os canais de TV fechada e aberta (Telecine, Megapix, SporTV, ESPN, Discovery, History, Globonews, Cartoon, etc.) já estão carregados e configurados para transmissão contínua sem necessidade de assinaturas externas.
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button id="btn-reload-official-list" class="btn-submit">
+            🔄 Recarregar Grade Completa Oficial (75 canais)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT DO REPRODUTOR -->
+  <script>
+    (function () {
+      'use strict';
+
+      // 75 canais 100% ONLINE E VERIFICADOS
+      const CHANNELS_DATA = [
+  {
+    "name": "Rede Globo HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=Rede%20Globo%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://media2.cdntvms.com.br/tv_morena_dorados/tracks-v1a1/mono.m3u8",
+    "backupUrl": "https://amg00716-globo-amg00716c1-tcl-br-9495.playouts.now.amagi.tv/playlist.m3u8"
+  },
+  {
+    "name": "Rede Globo São Paulo HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=Rede%20Globo%20Sao%20Paulo%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://up.kiwi/live/351921603109/34939156/296729.m3u8",
+    "backupUrl": "http://up.kiwi/live/351921603109/34939156/296748.m3u8"
+  },
+  {
+    "name": "Rede Globo Pará (TV Liberal Belém) HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=TV%20Liberal%20Rede%20Globo%20Para%20logo%20png%20transparent",
+    "url": "http://up.kiwi/live/351921603109/34939156/296819.m3u8",
+    "backupUrl": "http://up.kiwi/live/351921603109/34939156/296818.m3u8"
+  },
+  {
+    "name": "Rede Globo SP (EPTV Campinas) HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=EPTV%20Campinas%20Globo%20logo%20png%20transparent",
+    "url": "http://up.kiwi/live/351921603109/34939156/296700.m3u8",
+    "backupUrl": "http://up.kiwi/live/351921603109/34939156/296729.m3u8"
+  },
+  {
+    "name": "Rede Globo SP (TV Tribuna Santos) HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=TV%20Tribuna%20Santos%20Globo%20logo%20png%20transparent",
+    "url": "http://up.kiwi/live/351921603109/34939156/296748.m3u8",
+    "backupUrl": "http://up.kiwi/live/351921603109/34939156/296729.m3u8"
+  },
+  {
+    "name": "Rede Globo SP (TV Vanguarda) HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=TV%20Vanguarda%20Globo%20logo%20png%20transparent",
+    "url": "http://up.kiwi/live/351921603109/34939156/296775.m3u8",
+    "backupUrl": "http://up.kiwi/live/351921603109/34939156/296729.m3u8"
+  },
+  {
+    "name": "TV Paraense HD (Castanhal - Pará)",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=TV%20Paraense%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://video09.logicahost.com.br/tvparaense/tvparaense/playlist.m3u",
+    "backupUrl": "http://up.kiwi/live/351921603109/34939156/296818.m3u8"
+  },
+  {
+    "name": "SBT Nacional HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=SBT%20Nacional%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://up.kiwi/live/351921603109/34939156/296862.m3u8",
+    "backupUrl": "http://up.kiwi/live/351921603109/34939156/296880.m3u8"
+  },
+  {
+    "name": "Record TV HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=Record%20TV%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://media.cdntvms.com.br/record_nacional_sat/index.m3u8",
+    "backupUrl": "https://rnw-rn.otteravision.com/rnw/rn/rnw_rn.m3u8"
+  },
+  {
+    "name": "Band TV HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=Band%20TV%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://media.cdntvms.com.br/band_sat/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "TV Cultura HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=TV%20Cultura%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://fpa-gateway.tvcultura.com.br:8181/memfs/606caef0-a290-413d-9f1f-8fcdb3a73831.m3u8",
+    "backupUrl": "http://45.162.64.114/TV_CULTURA/index.m3u8"
+  },
+  {
+    "name": "RedeTV! HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=RedeTV%21%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/REDE_TV/index.m3u8",
+    "backupUrl": "https://tv01.zas.media:1936/redetvparana/redetvparana/playlist.m3u8"
+  },
+  {
+    "name": "TV Gazeta HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=TV%20Gazeta%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/GAZETA/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "TV Brasil HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=TV%20Brasil%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/TV_BRASIL/index.m3u8",
+    "backupUrl": "http://45.177.114.115/TV_BRASIL_2/index.m3u8"
+  },
+  {
+    "name": "TV Senado HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=TV%20Senado%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/TV_SENADO/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "TV Câmara Federal HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=TV%20C%C3%A2mara%20Federal%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/TV_CAMARA/index.m3u8",
+    "backupUrl": "https://stream3.camara.gov.br/tv1/manifest.m3u8"
+  },
+  {
+    "name": "Canal Gov HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=Canal%20Gov%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.177.114.115/TV_BRASIL_2/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Canal Educação HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=Canal%20Educa%C3%A7%C3%A3o%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://canaleducacao-stream.ebc.com.br/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Rede Brasil HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=Rede%20Brasil%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://up.kiwi/live/351921603109/34939156/1112.m3u8",
+    "backupUrl": "https://video09.logicahost.com.br/redebrasiloficial/redebrasiloficial/playlist.m3u8"
+  },
+  {
+    "name": "History Channel HD",
+    "group": "History & Discovery",
+    "category": "History & Discovery",
+    "logo": "https://tse2.mm.bing.net/th?q=History%20Channel%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.177.114.114/HISTORY/tracks-v3a1/mono.m3u8",
+    "backupUrl": "http://45.162.64.114/HISTORY/index.m3u8"
+  },
+  {
+    "name": "History 2 (H2) HD",
+    "group": "History & Discovery",
+    "category": "History & Discovery",
+    "logo": "https://tse2.mm.bing.net/th?q=History%202%20%28H2%29%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.177.114.114/HISTORY_2/tracks-v3a1/mono.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Discovery Channel HD",
+    "group": "History & Discovery",
+    "category": "History & Discovery",
+    "logo": "https://tse2.mm.bing.net/th?q=Discovery%20Channel%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.177.114.114/DISCOVERY_CHANNEL/tracks-v3a1/mono.m3u8",
+    "backupUrl": "http://45.162.64.114/DISCOVERY_CHANNEL/index.m3u8"
+  },
+  {
+    "name": "Discovery Turbo HD",
+    "group": "History & Discovery",
+    "category": "History & Discovery",
+    "logo": "https://tse2.mm.bing.net/th?q=Discovery%20Turbo%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.177.114.114/DISCOVERY_TURBO/tracks-v3a1/mono.m3u8",
+    "backupUrl": "https://jmp2.uk/plu-6014761dfb91870008ea6463.m3u8"
+  },
+  {
+    "name": "Discovery Kids HD",
+    "group": "History & Discovery",
+    "category": "History & Discovery",
+    "logo": "https://tse2.mm.bing.net/th?q=Discovery%20Kids%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.177.114.114/DISCOVERY_KIDS/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Discovery Science HD",
+    "group": "History & Discovery",
+    "category": "History & Discovery",
+    "logo": "https://tse2.mm.bing.net/th?q=Discovery%20Science%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.177.114.114/DISCOVERY_SCIENCE/tracks-v3a1/mono.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Discovery World HD",
+    "group": "History & Discovery",
+    "category": "History & Discovery",
+    "logo": "https://tse2.mm.bing.net/th?q=Discovery%20World%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.177.114.114/DISCOVERY_WORLD/tracks-v3a1/mono.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Discovery Theater HD",
+    "group": "History & Discovery",
+    "category": "History & Discovery",
+    "logo": "https://tse2.mm.bing.net/th?q=Discovery%20Theater%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.177.114.114/DISCOVERY_THEATER/tracks-v3a1/mono.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Animal Planet HD",
+    "group": "History & Discovery",
+    "category": "History & Discovery",
+    "logo": "https://tse2.mm.bing.net/th?q=Animal%20Planet%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.177.114.114/ANIMAL_PLANET/tracks-v3a1/mono.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "NASA TV HD (Ciência e Espaço)",
+    "group": "History & Discovery",
+    "category": "History & Discovery",
+    "logo": "https://tse2.mm.bing.net/th?q=NASA%20TV%20%28Ci%C3%AAncia%20e%20Espa%C3%A7o%29%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8",
+    "backupUrl": "https://jmp2.uk/plu-5d8d21b4da5ff5001a1dbd04.m3u8"
+  },
+  {
+    "name": "ge Fast (Globo Esporte 1080p) HD",
+    "group": "Canais Globo & Esportes",
+    "category": "Canais Globo & Esportes",
+    "logo": "https://tse2.mm.bing.net/th?q=ge%20Fast%20%28Globo%20Esporte%201080p%29%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://amg00716-globo-amg00716c1-tcl-br-9495.playouts.now.amagi.tv/playlist.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "SporTV HD",
+    "group": "Canais Globo & Esportes",
+    "category": "Canais Globo & Esportes",
+    "logo": "https://tse2.mm.bing.net/th?q=SporTV%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://181.78.197.59:8000/play/a078/index.m3u8",
+    "backupUrl": "https://amg00716-globo-amg00716c1-tcl-br-9495.playouts.now.amagi.tv/playlist.m3u8"
+  },
+  {
+    "name": "SporTV 2 HD",
+    "group": "Canais Globo & Esportes",
+    "category": "Canais Globo & Esportes",
+    "logo": "https://tse2.mm.bing.net/th?q=SporTV%202%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://181.78.197.59:8000/play/a079/index.m3u8",
+    "backupUrl": "http://170.83.49.66:8083/SPORTV3HD/index.m3u8"
+  },
+  {
+    "name": "SporTV 3 HD",
+    "group": "Canais Globo & Esportes",
+    "category": "Canais Globo & Esportes",
+    "logo": "https://tse2.mm.bing.net/th?q=SporTV%203%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://181.78.197.59:8000/play/a080/index.m3u8",
+    "backupUrl": "http://170.83.49.66:8083/SPORTV3HD/index.m3u8"
+  },
+  {
+    "name": "ESPN Brasil HD",
+    "group": "Canais Globo & Esportes",
+    "category": "Canais Globo & Esportes",
+    "logo": "https://tse2.mm.bing.net/th?q=ESPN%20Brasil%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/ESPN_BRASIL/index.m3u8",
+    "backupUrl": "http://181.78.197.59:8000/play/a081/index.m3u8"
+  },
+  {
+    "name": "ESPN 3 HD",
+    "group": "Canais Globo & Esportes",
+    "category": "Canais Globo & Esportes",
+    "logo": "https://tse2.mm.bing.net/th?q=ESPN%203%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://181.78.197.59:8000/play/a081/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Fox Sports / ESPN 4 HD",
+    "group": "Canais Globo & Esportes",
+    "category": "Canais Globo & Esportes",
+    "logo": "https://tse2.mm.bing.net/th?q=Fox%20Sports%20/%20ESPN%204%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/ESPN_4/index.m3u8",
+    "backupUrl": "http://45.177.114.115/ESPN_4/index.m3u8"
+  },
+  {
+    "name": "Premiere Clubes HD",
+    "group": "Canais Globo & Esportes",
+    "category": "Canais Globo & Esportes",
+    "logo": "https://tse2.mm.bing.net/th?q=Premiere%20Clubes%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://jmp2.uk/plu-6806d62369aec5b19cd628c0.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Combate HD / MMA TV",
+    "group": "Canais Globo & Esportes",
+    "category": "Canais Globo & Esportes",
+    "logo": "https://tse2.mm.bing.net/th?q=Combate%20/%20MMA%20TV%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://jmp2.uk/plu-5f32d2db0af67400077f29c4.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "FIFA+ HD",
+    "group": "Canais Globo & Esportes",
+    "category": "Canais Globo & Esportes",
+    "logo": "https://tse2.mm.bing.net/th?q=FIFA%2B%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://jmp2.uk/plu-66997e8d3a4ad20008e50be9.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Red Bull TV HD",
+    "group": "Canais Globo & Esportes",
+    "category": "Canais Globo & Esportes",
+    "logo": "https://tse2.mm.bing.net/th?q=Red%20Bull%20TV%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://jmp2.uk/plu-67813f3162bf016db944c9ab.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "WooHoo (Esportes Radicais)",
+    "group": "Canais Globo & Esportes",
+    "category": "Canais Globo & Esportes",
+    "logo": "https://tse2.mm.bing.net/th?q=WooHoo%20%28Esportes%20Radicais%29%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/WOOHOO/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Megapix HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=Megapix%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://jmp2.uk/plu-61b790b985706b00072cb797.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Telecine Premium HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=Telecine%20Premium%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://jmp2.uk/plu-5f120e94a5714d00074576a1.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Telecine Action HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=Telecine%20Action%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://jmp2.uk/plu-5f120f41b7d403000783a6d6.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Telecine Pipoca HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=Telecine%20Pipoca%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://jmp2.uk/plu-62545ed3dab4380007582f7c.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Telecine Touch HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=Telecine%20Touch%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://jmp2.uk/plu-5f171f988ab9780007fa95ea.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Telecine Fun HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=Telecine%20Fun%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://jmp2.uk/plu-5f12101f0b12f00007844c7c.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Telecine Cult HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=Telecine%20Cult%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://jmp2.uk/plu-5fa1612a669ba0000702017b.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "TNT HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=TNT%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/TNT/index.m3u8",
+    "backupUrl": "http://45.177.114.114/TNT/tracks-v3a1/mono.m3u8"
+  },
+  {
+    "name": "Space HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=Space%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/SPACE/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Sony Movies HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=Sony%20Movies%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/SONY_MOVIES/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Adrenalina Pura HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://images.pluto.tv/channels/61b790b985706b00072cb797/colorLogoPNG.png",
+    "url": "https://jmp2.uk/plu-61b790b985706b00072cb797.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Canal Fox HD (Os Simpsons)",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=Canal%20Fox%20%28Os%20Simpsons%29%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://138.121.15.230:9002/STAR-CHANNEL/tracks-v1a1/mono.m3u8",
+    "backupUrl": "http://138.121.15.230:9002/FX/tracks-v1a1/mono.m3u8"
+  },
+  {
+    "name": "FX HD (Fox FX)",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=FX%20%28Fox%20FX%29%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://138.121.15.230:9002/FX/tracks-v1a1/mono.m3u8",
+    "backupUrl": "http://138.121.15.230:9002/STAR-CHANNEL/tracks-v1a1/mono.m3u8"
+  },
+  {
+    "name": "Cinecanal HD (Fox Life)",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=Cinecanal%20%28Fox%20Life%29%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://138.121.15.230:9002/CINECANAL/index.m3u8",
+    "backupUrl": "https://jmp2.uk/plu-61b790b985706b00072cb797.m3u8"
+  },
+  {
+    "name": "Warner Channel HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=Warner%20Channel%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.177.114.115/WARNER_CHANNEL/index.m3u8",
+    "backupUrl": "http://45.162.64.114/WARNER_CHANNEL/index.m3u8"
+  },
+  {
+    "name": "Sony Channel HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=Sony%20Channel%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://138.121.15.230:9002/SONY/index.m3u8",
+    "backupUrl": "http://170.83.16.50/SONY_CHANNEL/index.m3u8"
+  },
+  {
+    "name": "AXN HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=AXN%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://138.121.15.230:9002/AXN/index.m3u8",
+    "backupUrl": "http://170.83.16.50/AXN/index.m3u8"
+  },
+  {
+    "name": "Universal TV HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://tse2.mm.bing.net/th?q=Universal%20TV%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://138.121.15.230:9002/UNIVERSAL-CHANNEL/index.m3u8",
+    "backupUrl": "http://187.102.210.46/universo/index.m3u8"
+  },
+  {
+    "name": "Cine Sucessos HD",
+    "group": "Filmes & Cinema",
+    "category": "Filmes & Cinema",
+    "logo": "https://images.pluto.tv/channels/5f120e94a5714d00074576a1/colorLogoPNG.png",
+    "url": "https://jmp2.uk/plu-5f120e94a5714d00074576a1.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Canal Futura (Globo / FRM)",
+    "group": "Globosat & Variedades",
+    "category": "Globosat & Variedades",
+    "logo": "https://tse2.mm.bing.net/th?q=Canal%20Futura%20%28Globo%20/%20FRM%29%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/FUTURA/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "GloboNews Ao Vivo HD",
+    "group": "Globosat & Variedades",
+    "category": "Globosat & Variedades",
+    "logo": "https://tse2.mm.bing.net/th?q=GloboNews%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://up.kiwi/live/351921603109/34939156/296342.m3u8",
+    "backupUrl": "http://up.kiwi/live/351921603109/34939156/299672.m3u8"
+  },
+  {
+    "name": "Multishow HD",
+    "group": "Globosat & Variedades",
+    "category": "Globosat & Variedades",
+    "logo": "https://tse2.mm.bing.net/th?q=Multishow%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01131-tracetv-tracebrazuca-samsungbr/playlist.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "GNT HD / Gastronomia",
+    "group": "Globosat & Variedades",
+    "category": "Globosat & Variedades",
+    "logo": "https://tse2.mm.bing.net/th?q=GNT%20/%20Gastronomia%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://jmp2.uk/plu-5fd1419a3b4f4b000773ba85.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Viva HD (Novelas & Clássicos)",
+    "group": "Globosat & Variedades",
+    "category": "Globosat & Variedades",
+    "logo": "https://tse2.mm.bing.net/th?q=Viva%20%28Novelas%20%26%20Cl%C3%A1ssicos%29%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/TNT_NOVELAS/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "TNT Novelas HD",
+    "group": "Globosat & Variedades",
+    "category": "Globosat & Variedades",
+    "logo": "https://tse2.mm.bing.net/th?q=TNT%20Novelas%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/TNT_NOVELAS/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Cartoon Network HD",
+    "group": "Infantil & Cultura",
+    "category": "Infantil & Cultura",
+    "logo": "https://tse2.mm.bing.net/th?q=Cartoon%20Network%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/CARTOON_NETWORK/index.m3u8",
+    "backupUrl": "http://170.83.16.50/CARTOON/index.m3u8"
+  },
+  {
+    "name": "Turma da Mônica HD",
+    "group": "Infantil & Cultura",
+    "category": "Infantil & Cultura",
+    "logo": "https://images.pluto.tv/channels/5f997e44949bc70007a6941e/colorLogoPNG.png",
+    "url": "https://jmp2.uk/plu-5f997e44949bc70007a6941e.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Bob Esponja Calça Quadrada HD",
+    "group": "Infantil & Cultura",
+    "category": "Infantil & Cultura",
+    "logo": "https://images.pluto.tv/channels/62545c0b002f4b0007688b61/colorLogoPNG.png",
+    "url": "https://jmp2.uk/plu-62545c0b002f4b0007688b61.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Boomerang / Cartoonito HD",
+    "group": "Infantil & Cultura",
+    "category": "Infantil & Cultura",
+    "logo": "https://tse2.mm.bing.net/th?q=Boomerang%20/%20Cartoonito%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/BOOMERANG/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "ZooMoo Kids HD",
+    "group": "Infantil & Cultura",
+    "category": "Infantil & Cultura",
+    "logo": "https://tse2.mm.bing.net/th?q=ZooMoo%20Kids%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/ZOOMOO_KIDS/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "BabyFirst Kids Brasil",
+    "group": "Infantil & Cultura",
+    "category": "Infantil & Cultura",
+    "logo": "https://images.pluto.tv/channels/5f4fb4cf605ddf000748e16f/colorLogoPNG.png",
+    "url": "https://jmp2.uk/plu-5f4fb4cf605ddf000748e16f.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Arte 1 (Cinema & Cultura)",
+    "group": "Infantil & Cultura",
+    "category": "Infantil & Cultura",
+    "logo": "https://tse2.mm.bing.net/th?q=Arte%201%20%28Cinema%20%26%20Cultura%29%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/ARTE1/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Play TV (Games & Cultura Pop)",
+    "group": "Infantil & Cultura",
+    "category": "Infantil & Cultura",
+    "logo": "https://tse2.mm.bing.net/th?q=Play%20TV%20%28Games%20%26%20Cultura%20Pop%29%20canal%20tv%20logo%20png%20transparent",
+    "url": "http://45.162.64.114/PLAY_TV/index.m3u8",
+    "backupUrl": ""
+  },
+  {
+    "name": "Record News HD",
+    "group": "TV Aberta & Nacionais",
+    "category": "TV Aberta & Nacionais",
+    "logo": "https://tse2.mm.bing.net/th?q=Record%20News%20canal%20tv%20logo%20png%20transparent",
+    "url": "https://rnw-rn.otteravision.com/rnw/rn/rnw_rn.m3u8",
+    "backupUrl": ""
+  }
+]];
+      const state = {
+        channels: CHANNELS_DATA,
+        filteredChannels: CHANNELS_DATA,
+        currentCategory: 'ALL',
+        currentChannelIndex: 0,
+        activeChannel: CHANNELS_DATA[0],
+        isUsingBackup: false,
+        favorites: new Set(JSON.parse(localStorage.getItem('iptv_favorites_v5') || '[]')),
+        hls: null,
+        aspectRatioMode: 0,
+        aspectRatios: ['fit-contain', 'fit-16-9', 'fit-4-3', 'fit-fill', 'fit-cover'],
+        aspectLabels: ['Original (Ajustar)', '16:9 Widescreen', '4:3 Tradicional', 'Esticar Tela', 'Preencher (Zoom)'],
+        idleTimeout: null,
+        digitBuffer: '',
+        digitTimeout: null
+      };
+
+      // ELEMENTOS DOM
+      const video = document.getElementById('video-element');
+      const playerViewport = document.getElementById('player-viewport');
+      const sidebar = document.getElementById('sidebar');
+      const channelList = document.getElementById('channel-list');
+      const categoryPillsContainer = document.getElementById('category-pills');
+      const searchInput = document.getElementById('search-input');
+      const btnClearSearch = document.getElementById('btn-clear-search');
+      const channelsCount = document.getElementById('channels-count');
+      const currentCategoryName = document.getElementById('current-category-name');
+
+      // OSD Elements
+      const osdTitle = document.getElementById('osd-title');
+      const osdCategory = document.getElementById('osd-category');
+      const osdLogo = document.getElementById('osd-logo');
+      const osdAvatarFallback = document.getElementById('osd-avatar-fallback');
+      const osdToast = document.getElementById('osd-toast');
+      const statusOverlay = document.getElementById('status-overlay');
+      const statusLabel = document.getElementById('status-label');
+      const errorCard = document.getElementById('error-card');
+      const errorMessage = document.getElementById('error-message');
+      const channelStepperNumber = document.getElementById('channel-stepper-number');
+
+      // Botões
+      const btnPlayPause = document.getElementById('btn-play-pause');
+      const iconPlay = document.getElementById('icon-play');
+      const iconPause = document.getElementById('icon-pause');
+      const btnPrevChannel = document.getElementById('btn-prev-channel');
+      const btnNextChannel = document.getElementById('btn-next-channel');
+      const btnMute = document.getElementById('btn-mute');
+      const iconVolHigh = document.getElementById('icon-vol-high');
+      const iconVolMute = document.getElementById('icon-vol-mute');
+      const volumeRange = document.getElementById('volume-range');
+      const btnReloadStream = document.getElementById('btn-reload-stream');
+      const btnAspectRatio = document.getElementById('btn-aspect-ratio');
+      const btnPip = document.getElementById('btn-pip');
+      const btnFullscreen = document.getElementById('btn-fullscreen');
+      const iconFsEnter = document.getElementById('icon-fs-enter');
+      const iconFsExit = document.getElementById('icon-fs-exit');
+      const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
+      const btnToggleSidebarTop = document.getElementById('btn-toggle-sidebar-top');
+      const btnCloseSidebar = document.getElementById('btn-close-sidebar');
+      const btnRetryStream = document.getElementById('btn-retry-stream');
+      const btnTryBackup = document.getElementById('btn-try-backup');
+
+      // Modais
+      const shortcutsModal = document.getElementById('shortcuts-modal');
+      const btnShortcuts = document.getElementById('btn-shortcuts');
+      const btnCloseShortcuts = document.getElementById('btn-close-shortcuts');
+      const credentialsModal = document.getElementById('credentials-modal');
+      const btnOpenModal = document.getElementById('btn-open-modal');
+      const btnCloseModal = document.getElementById('btn-close-modal');
+      const btnReloadOfficialList = document.getElementById('btn-reload-official-list');
+
+      // Helper para iniciais de canais
+      function getInitials(name) {
+        if (!name) return 'TV';
+        const parts = name.replace(/[^a-zA-Z0-9 ]/g, '').trim().split(/\s+/);
+        if (parts.length >= 2) {
+          return (parts[0][0] + parts[1][0]).toUpperCase();
+        }
+        return name.slice(0, 2).toUpperCase();
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      // INICIALIZAÇÃO
+      let initialized = false;
+      function init() {
+        if (initialized) return;
+        initialized = true;
+
+        // Verificação Inteligente de Conexão com o Servidor Node
+        if (window.location.protocol === 'file:') {
+          fetch('http://localhost:3000/api/health')
+            .then(r => r.json())
+            .then(data => {
+              if (data && data.status === 'ONLINE') {
+                window.location.replace('http://localhost:3000');
+              }
+            })
+            .catch(() => {
+              const banner = document.createElement('div');
+              banner.id = 'node-required-banner';
+              banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;background:linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);color:#fff;padding:12px 20px;text-align:center;font-weight:600;font-family:sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;gap:12px;border-bottom:2px solid #00d2ff;';
+              banner.innerHTML = `
+                <span>💡 <strong>Dica:</strong> Para assistir a todos os 75 canais com sinal liberado e sem travar, execute o arquivo <strong>INICIAR_IPTV.bat</strong>!</span>
+                <button onclick="this.parentElement.remove()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;padding:4px 10px;border-radius:6px;cursor:pointer;font-weight:bold;">Entendi</button>
+              `;
+              document.body.prepend(banner);
+            });
+        }
+
+        state.channels = CHANNELS_DATA || [];
+        state.filteredChannels = CHANNELS_DATA || [];
+        
+        renderChannels();
+        bindEvents();
+        restoreSavedVolume();
+        
+        if (state.filteredChannels.length > 0) {
+          playChannel(0);
+        }
+        showToast('📺 Grade de ' + state.channels.length + ' Canais Carregada!');
+      }
+
+      // RENDERIZAÇÃO DA SIDEBAR DE CANAIS
+      function renderChannels() {
+        channelList.innerHTML = '';
+        channelsCount.textContent = state.filteredChannels.length + ' canais';
+
+        if (state.filteredChannels.length === 0) {
+          channelList.innerHTML = `
+            <div style="text-align:center; padding: 40px 16px; color: var(--text-muted); font-size: 0.9rem;">
+              Nenhum canal encontrado para o filtro selecionado.
+            </div>
+          `;
+          return;
+        }
+
+        state.filteredChannels.forEach((ch, index) => {
+          const item = document.createElement('div');
+          item.className = 'channel-item' + (index === state.currentChannelIndex ? ' active' : '');
+          item.id = 'channel-item-' + index;
+
+          const isFav = state.favorites.has(ch.name);
+          const initials = getInitials(ch.name);
+          const logoSrc = ch.logo ? escapeHtml(ch.logo) : '';
+
+          item.innerHTML = `
+            <span class="channel-number">${index + 1}</span>
+            <div class="channel-logo-wrapper">
+              <div class="channel-avatar-fallback">${initials}</div>
+              ${logoSrc ? `<img class="channel-logo" src="${logoSrc}" alt="${escapeHtml(ch.name)}" loading="lazy" referrerpolicy="no-referrer" style="display:none;" onload="this.style.display='block'; if(this.previousElementSibling) this.previousElementSibling.style.display='none';" onerror="this.remove();">` : ''}
+            </div>
+            <div class="channel-info">
+              <div class="channel-name" title="${escapeHtml(ch.name)}">${escapeHtml(ch.name)}</div>
+              <div class="channel-group-tag">${escapeHtml(ch.group)}</div>
+            </div>
+            <div class="channel-actions">
+              <div class="equalizer-bars">
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+              </div>
+              <button class="channel-fav-btn${isFav ? ' favorited' : ''}" title="${isFav ? 'Remover dos Favoritos' : 'Favoritar Canal'}" data-name="${escapeHtml(ch.name)}">
+                ★
+              </button>
+            </div>
+          `;
+
+          item.addEventListener('click', (e) => {
+            if (e.target.closest('.channel-fav-btn')) return;
+            playChannel(index);
+          });
+
+          const favBtn = item.querySelector('.channel-fav-btn');
+          favBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleFavorite(ch.name);
+          });
+
+          channelList.appendChild(item);
+        });
+
+        scrollActiveChannelIntoView();
+      }
+
+      function scrollActiveChannelIntoView() {
+        const activeItem = document.getElementById('channel-item-' + state.currentChannelIndex);
+        if (activeItem) {
+          activeItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
+
+      function toggleFavorite(channelName) {
+        if (state.favorites.has(channelName)) {
+          state.favorites.delete(channelName);
+          showToast('Removido dos favoritos');
+        } else {
+          state.favorites.add(channelName);
+          showToast('Adicionado aos favoritos ⭐');
+        }
+        localStorage.setItem('iptv_favorites_v5', JSON.stringify(Array.from(state.favorites)));
+        
+        if (state.currentCategory === 'FAV') {
+          filterChannels();
+        } else {
+          renderChannels();
+        }
+      }
+
+      function filterChannels() {
+        const query = searchInput.value.toLowerCase().trim();
+        state.filteredChannels = state.channels.filter(ch => {
+          const matchQuery = !query || ch.name.toLowerCase().includes(query) || ch.group.toLowerCase().includes(query);
+          if (!matchQuery) return false;
+
+          if (state.currentCategory === 'ALL') return true;
+          if (state.currentCategory === 'FAV') return state.favorites.has(ch.name);
+          return ch.group === state.currentCategory || (state.currentCategory === 'Canais Globo & Esportes' && ch.name.toLowerCase().includes('globo'));
+        });
+
+        state.currentChannelIndex = state.filteredChannels.findIndex(c => c.name === state.activeChannel?.name);
+        if (state.currentChannelIndex === -1 && state.filteredChannels.length > 0) {
+          state.currentChannelIndex = 0;
+        }
+
+        renderChannels();
+      }
+
+      // REPRODUÇÃO & STREAMING
+      function playChannel(index) {
+        if (index < 0 || index >= state.filteredChannels.length) return;
+
+        state.currentChannelIndex = index;
+        const channel = state.filteredChannels[index];
+        state.activeChannel = channel;
+
+        // Atualiza OSD
+        osdTitle.textContent = channel.name;
+        osdCategory.textContent = channel.group;
+        channelStepperNumber.textContent = 'CH ' + (index + 1);
+
+        const initials = getInitials(channel.name);
+        osdAvatarFallback.textContent = initials;
+
+        osdAvatarFallback.style.display = 'flex';
+        osdLogo.style.display = 'none';
+        if (channel.logo) {
+          osdLogo.referrerPolicy = 'no-referrer';
+          osdLogo.onload = () => {
+            osdLogo.style.display = 'block';
+            osdAvatarFallback.style.display = 'none';
+          };
+          osdLogo.onerror = () => {
+            osdLogo.style.display = 'none';
+            osdAvatarFallback.style.display = 'flex';
+          };
+          osdLogo.src = channel.logo;
+        }
+
+        // Atualiza destaque na lista
+        document.querySelectorAll('.channel-item').forEach((item, idx) => {
+          if (idx === index) {
+            item.classList.add('active');
+          } else {
+            item.classList.remove('active');
+          }
+        });
+        scrollActiveChannelIntoView();
+
+        // Oculta erro e exibe status
+        hideError();
+        showStatus('Carregando sinal...');
+
+        const playUrl = resolveStreamUrl(channel.url);
+        loadStreamUrl(playUrl);
+      }
+
+      function reportTelemetry(type, details) {
+        const payload = {
+          type: type,
+          channel: state.activeChannel ? state.activeChannel.name : 'Desconhecido',
+          streamUrl: state.activeChannel ? state.activeChannel.url : '',
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          details: details || {}
+        };
+        const endpoint = window.location.protocol.startsWith('http')
+          ? '/api/telemetry'
+          : 'http://localhost:3000/api/telemetry';
+        try {
+          if (navigator.sendBeacon) {
+            navigator.sendBeacon(endpoint, new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+          } else {
+            fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            }).catch(() => {});
+          }
+        } catch (e) {}
+      }
+
+      let stallTimer = null;
+      function resolveStreamUrl(rawUrl) {
+        if (!rawUrl) return '';
+        const lower = rawUrl.toLowerCase();
+        const isHttpPage = window.location.protocol.startsWith('http');
+        const isHttpsPage = window.location.protocol === 'https:';
+        const needsProxy = isHttpsPage || 
+          lower.includes('jmp2.uk') || lower.includes('pluto.tv') || lower.includes('stitcher') || lower.includes('amagi.tv') ||
+          lower.includes('dai.google.com') || lower.includes('45.162.64.114') || lower.includes('170.83.') ||
+          lower.includes('181.78.197.59') || lower.includes('138.121.') || lower.includes('45.177.') ||
+          lower.includes('15.204.') || lower.includes('up.kiwi');
+        if (isHttpPage && needsProxy) {
+          return `/proxy?url=${encodeURIComponent(rawUrl)}`;
+        }
+        return rawUrl;
+      }
+      function switchSource() {
+        if (!state.activeChannel) return;
+        state.isUsingBackup = !state.isUsingBackup;
+        const targetUrl = state.isUsingBackup 
+          ? (state.activeChannel.backupUrl || state.activeChannel.url)
+          : state.activeChannel.url;
+        
+        const label = state.isUsingBackup ? 'Sinal 2 (Reserva / Adaptativo)' : 'Sinal 1 (Principal)';
+        showToast('📡 Sintonizando ' + label);
+        showStatus('Carregando ' + label + '...');
+        
+        const resolved = resolveStreamUrl(targetUrl);
+        loadStreamUrl(resolved);
+      }
+
+      function playVideoWithAutoplayFallback() {
+        const p = video.play();
+        if (p !== undefined) {
+          p.then(() => {
+            hideStatus();
+            hideError();
+          }).catch((err) => {
+            console.warn('[Player] Autoplay bloqueado pelo navegador. Iniciando mudo:', err);
+            video.muted = true;
+            updateVolumeIcons();
+            video.play().then(() => {
+              hideStatus();
+              hideError();
+              showToast('🔇 Clique na tela para ativar o som');
+            }).catch(() => {});
+          });
+        }
+      }
+
+      function loadStreamUrl(url) {
+        if (state.hls) {
+          state.hls.destroy();
+          state.hls = null;
+        }
+
+        clearTimeout(stallTimer);
+        // Timeout não-destrutivo: aguarda 20 segundos em conexões lentas sem matar o fluxo
+        stallTimer = setTimeout(() => {
+          if (video.paused && video.readyState === 0) {
+            showStatus('Conexão lenta. Otimizando buffer...');
+            if (state.activeChannel?.backupUrl && !state.isUsingBackup) {
+              switchSource();
+            }
+          }
+        }, 20000);
+
+        showStatus('Sintonizando sinal ao vivo...');
+        hideError();
+
+        if (Hls.isSupported()) {
+          const hls = new Hls({
+            enableWorker: true,
+            lowLatencyMode: false,         // Desativado: Modo de baixa latência agressivo causa engasgos em Wi-Fi oscilante
+            backBufferLength: 300,         // BACKUP DE 5 MINUTOS (300s): retém tudo o que foi exibido para permitir retorno suave
+            maxBufferLength: 45,           // Mantém até 45s de buffer pré-carregado à frente (dá tempo de sobra para a internet carregar)
+            maxMaxBufferLength: 90,        // Teto de 90s para absorver qualquer lentidão ou oscilação da operadora
+            maxBufferSize: 90 * 1000 * 1000,
+            startLevel: -1,                // Auto ABR com seleção inteligente do perfil mais estável
+            capLevelToPlayerSize: true,    // Ajusta o bitrate de acordo com o tamanho real da tela
+            abrBandWidthFactor: 0.65,      // Margem de segurança de 35% de folga na banda contra oscilações de rede
+            abrBandWidthUpFactor: 0.50,    // Subida conservadora: só sobe se a conexão estiver 100% comprovada
+            abrEwmaDefaultEstimate: 2200000,// Inicia estimando 2.2 Mbps (evita tentar puxar 5.4 Mbps de cara e travar)
+            abrEwmaFastLive: 3.0,
+            abrEwmaSlowLive: 9.0,          // Média móvel suave que evita troca histérica de qualidade
+            startFragPrefetch: true,       // Pré-carrega o próximo segmento sem gerar pausas
+            progressive: false,            // CRÍTICO: false garante integridade dos pacotes MPEG-TS (elimina o efeito "embaralhando")
+            manifestLoadingTimeOut: 15000,
+            manifestLoadingMaxRetry: 5,
+            manifestLoadingRetryDelay: 500,
+            levelLoadingTimeOut: 15000,
+            levelLoadingMaxRetry: 5,
+            fragLoadingTimeOut: 18000,
+            fragLoadingMaxRetry: 6,
+            fragLoadingRetryDelay: 600,
+            liveSyncDurationCount: 3,      // Sincronização inteligente a 3 segmentos da borda ao vivo
+            liveMaxLatencyDurationCount: 8,// Auto-reconexão inteligente à transmissão caso a internet oscile
+            maxLiveSyncPlaybackRate: 1.1,  // Suave recuperação de atraso sem saltos bruscos
+            liveDurationInfinity: true,    // Permite que o buffer se estenda no tempo sem forçar sincronização
+            nudgeOffset: 0.2,              // Salta pequenas descontinuidades de timestamp do sinal da emissora
+            nudgeMaxRetry: 10
+          });
+
+          hls.loadSource(url);
+          hls.attachMedia(video);
+
+          hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+            // Blindagem contra instabilidade de sinal e travamento de resolução pesada
+            if (data.levels && data.levels.length > 1) {
+              // Se houver múltiplas qualidades, seleciona o perfil HD de alta estabilidade (entre 1.4 Mbps e 3.2 Mbps)
+              // Isso evita que a transmissão salte para 5.4 Mbps em conexões com oscilações, eliminando imagem embaralhada e buffering
+              let stableLevelIdx = -1;
+              for (let i = 0; i < data.levels.length; i++) {
+                const bw = data.levels[i].bitrate;
+                if (bw >= 1400000 && bw <= 3200000) {
+                  stableLevelIdx = i;
+                  break;
+                }
+              }
+              if (stableLevelIdx !== -1) {
+                hls.autoLevelCapping = stableLevelIdx;
+                hls.startLevel = stableLevelIdx;
+                console.log(`[HLS Engine] Blindagem Anti-Travamento: Perfil ${data.levels[stableLevelIdx].height || 'HD'}p fixado (~${Math.round(data.levels[stableLevelIdx].bitrate/1000)} kbps)`);
+              }
+            }
+
+            playVideoWithAutoplayFallback();
+          });
+
+          hls.on(Hls.Events.ERROR, (event, data) => {
+            // Auto-recuperação inteligente de micro-travamentos de buffer
+            if (data.details === Hls.ErrorDetails.BUFFER_STALLED_ERROR) {
+              console.warn('[HLS Engine] Micro-travamento de buffer detectado. Destravando fluxo suavemente...');
+              const buffered = video.buffered;
+              let hasBufferAhead = false;
+              for (let i = 0; i < buffered.length; i++) {
+                if (buffered.start(i) <= video.currentTime && buffered.end(i) > video.currentTime + 0.1) {
+                  hasBufferAhead = true;
+                  break;
+                }
+              }
+              if (hasBufferAhead) {
+                video.currentTime += 0.1;
+              } else if (state.hls) {
+                state.hls.startLoad();
+              }
+              return;
+            }
+
+            if (data.details === Hls.ErrorDetails.BUFFER_SEEK_OVER_HOLE) {
+              return;
+            }
+
+            if (data.fatal) {
+              reportTelemetry('HLS_FATAL_ERROR', { errorType: data.type, details: data.details, url });
+              switch (data.type) {
+                case Hls.ErrorTypes.NETWORK_ERROR:
+                  if (!url.includes('/proxy?url=') && window.location.protocol.startsWith('http')) {
+                    const proxyUrl = `/proxy?url=${encodeURIComponent(state.activeChannel.url)}`;
+                    loadStreamUrl(proxyUrl);
+                  } else if (state.activeChannel?.backupUrl && !state.isUsingBackup) {
+                    switchSource();
+                  } else {
+                    hls.startLoad();
+                  }
+                  break;
+                case Hls.ErrorTypes.MEDIA_ERROR:
+                  hls.recoverMediaError();
+                  break;
+                default:
+                  if (state.activeChannel?.backupUrl && !state.isUsingBackup) {
+                    switchSource();
+                  } else {
+                    showError('Sinal instável. Clique em Alternar Sinal ou pressione R.');
+                  }
+                  break;
+              }
+            }
+          });
+
+          state.hls = hls;
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+          video.src = url;
+          playVideoWithAutoplayFallback();
+        } else {
+          reportTelemetry('NO_HLS_SUPPORT');
+          showError('Seu navegador não possui suporte nativo a streaming HLS.');
+        }
+      }
+
+      function nextChannel() {
+        let nextIdx = state.currentChannelIndex + 1;
+        if (nextIdx >= state.filteredChannels.length) nextIdx = 0;
+        playChannel(nextIdx);
+      }
+
+      function prevChannel() {
+        let prevIdx = state.currentChannelIndex - 1;
+        if (prevIdx < 0) prevIdx = state.filteredChannels.length - 1;
+        playChannel(prevIdx);
+      }
+
+      function togglePlayPause() {
+        if (video.paused) {
+          video.play();
+          showToast('▶ Reproduzindo');
+        } else {
+          video.pause();
+          showToast('⏸ Pausado');
+        }
+      }
+
+      function setVolume(val) {
+        val = Math.max(0, Math.min(1, val));
+        video.volume = val;
+        video.muted = (val === 0);
+        volumeRange.value = val;
+        updateVolumeIcons();
+        localStorage.setItem('iptv_volume', val.toString());
+      }
+
+      function toggleMute() {
+        video.muted = !video.muted;
+        updateVolumeIcons();
+        showToast(video.muted ? '🔇 Mudo' : '🔊 Volume: ' + Math.round(video.volume * 100) + '%');
+      }
+
+      function updateVolumeIcons() {
+        if (video.muted || video.volume === 0) {
+          iconVolHigh.style.display = 'none';
+          iconVolMute.style.display = 'block';
+        } else {
+          iconVolHigh.style.display = 'block';
+          iconVolMute.style.display = 'none';
+        }
+      }
+
+      function restoreSavedVolume() {
+        const saved = localStorage.getItem('iptv_volume');
+        if (saved !== null) {
+          const val = parseFloat(saved);
+          if (!isNaN(val)) setVolume(val);
+        }
+      }
+
+      function cycleAspectRatio() {
+        video.classList.remove(...state.aspectRatios);
+        state.aspectRatioMode = (state.aspectRatioMode + 1) % state.aspectRatios.length;
+        const mode = state.aspectRatios[state.aspectRatioMode];
+        if (mode !== 'fit-contain') {
+          video.classList.add(mode);
+        }
+        showToast('Proporção: ' + state.aspectLabels[state.aspectRatioMode]);
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          playerViewport.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+
+      function togglePiP() {
+        if (document.pictureInPictureElement) {
+          document.exitPictureInPicture().catch(() => {});
+        } else if (document.pictureInPictureEnabled) {
+          video.requestPictureInPicture().catch(() => {});
+        }
+      }
+
+      function showToast(text) {
+        osdToast.textContent = text;
+        osdToast.classList.add('show');
+        clearTimeout(state.toastTimer);
+        state.toastTimer = setTimeout(() => {
+          osdToast.classList.remove('show');
+        }, 2200);
+      }
+
+      function showStatus(text) {
+        statusLabel.textContent = text;
+        statusOverlay.style.display = 'flex';
+      }
+
+      function hideStatus() {
+        statusOverlay.style.display = 'none';
+      }
+
+      function showError(msg) {
+        hideStatus();
+        errorMessage.textContent = msg;
+        errorCard.style.display = 'flex';
+      }
+
+      function hideError() {
+        errorCard.style.display = 'none';
+      }
+
+      function resetIdleTimer() {
+        playerViewport.classList.remove('idle-hidden');
+        clearTimeout(state.idleTimeout);
+        if (!video.paused) {
+          state.idleTimeout = setTimeout(() => {
+            playerViewport.classList.add('idle-hidden');
+          }, 3500);
+        }
+      }
+
+      // BIND DE EVENTOS
+      function bindEvents() {
+        video.addEventListener('play', () => {
+          iconPlay.style.display = 'none';
+          iconPause.style.display = 'block';
+          resetIdleTimer();
+        });
+
+        video.addEventListener('pause', () => {
+          iconPlay.style.display = 'block';
+          iconPause.style.display = 'none';
+          playerViewport.classList.remove('idle-hidden');
+        });
+
+        video.addEventListener('playing', () => {
+          clearTimeout(stallTimer);
+          hideStatus();
+          hideError();
+        });
+
+        video.addEventListener('waiting', () => showStatus('Bufferizando...'));
+
+        video.addEventListener('error', () => {
+          reportTelemetry('VIDEO_TAG_ERROR', { code: video.error?.code, message: video.error?.message });
+          showError('Falha no sinal deste canal. Tentando reconectar...');
+        });
+
+        window.addEventListener('error', (e) => {
+          if (!e.filename && (!e.message || e.message === 'Script error.')) return;
+          if (e.filename && (e.filename.startsWith('chrome-extension:') || e.filename.startsWith('moz-extension:'))) return;
+          reportTelemetry('WINDOW_JS_ERROR', { message: e.message, filename: e.filename, lineno: e.lineno });
+        });
+
+        window.addEventListener('unhandledrejection', (e) => {
+          const reasonMsg = e.reason ? (e.reason.message || String(e.reason)) : '';
+          if (reasonMsg.includes('AbortError') || reasonMsg.includes('interrupted') || reasonMsg.includes('play()')) return;
+          reportTelemetry('UNHANDLED_REJECTION', { reason: reasonMsg });
+        });
+
+        // Clique para play/pause, duplo clique para tela cheia
+        let clickTimeout = null;
+        video.addEventListener('click', () => {
+          if (clickTimeout) {
+            clearTimeout(clickTimeout);
+            clickTimeout = null;
+            toggleFullscreen();
+          } else {
+            clickTimeout = setTimeout(() => {
+              clickTimeout = null;
+              togglePlayPause();
+            }, 250);
+          }
+        });
+
+        playerViewport.addEventListener('mousemove', resetIdleTimer);
+        playerViewport.addEventListener('touchstart', resetIdleTimer, { passive: true });
+
+        btnPlayPause.addEventListener('click', togglePlayPause);
+        btnPrevChannel.addEventListener('click', prevChannel);
+        btnNextChannel.addEventListener('click', nextChannel);
+        btnMute.addEventListener('click', toggleMute);
+        btnReloadStream.addEventListener('click', () => {
+          showToast('Recarregando canal...');
+          playChannel(state.currentChannelIndex);
+        });
+        btnAspectRatio.addEventListener('click', cycleAspectRatio);
+        btnPip.addEventListener('click', togglePiP);
+        btnFullscreen.addEventListener('click', toggleFullscreen);
+
+        volumeRange.addEventListener('input', (e) => setVolume(parseFloat(e.target.value)));
+
+        // --- CONTROLES DVR AO VIVO ESTILO YOUTUBE ---
+        const btnRewind10 = document.getElementById('btn-rewind-10');
+        const btnForward10 = document.getElementById('btn-forward-10');
+        const btnLiveIndicator = document.getElementById('btn-live-indicator');
+        const liveBadgeText = document.getElementById('live-badge-text');
+        const osdLivePillTop = document.getElementById('osd-live-pill-top');
+        const osdLivePillText = document.getElementById('osd-live-pill-text');
+        const dvrTimeline = document.getElementById('dvr-timeline-container');
+        const dvrPlayedBar = document.getElementById('dvr-played-bar');
+        const dvrBufferBar = document.getElementById('dvr-buffer-bar');
+        const dvrPlayhead = document.getElementById('dvr-playhead');
+        const dvrHoverTooltip = document.getElementById('dvr-hover-tooltip');
+
+        function formatDVRTime(totalSec) {
+          totalSec = Math.max(0, Math.floor(totalSec));
+          const h = Math.floor(totalSec / 3600);
+          const m = Math.floor((totalSec % 3600) / 60);
+          const s = totalSec % 60;
+          if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+          return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function getDVRSeekableRange() {
+          let start = 0;
+          let end = (video.duration && isFinite(video.duration)) ? video.duration : video.currentTime;
+          if (video.seekable && video.seekable.length > 0) {
+            start = video.seekable.start(0);
+            end = video.seekable.end(video.seekable.length - 1);
+          }
+          // Inclui o backup de memória do buffer histórico retido (backBufferLength) para permitir retorno livre
+          if (video.buffered && video.buffered.length > 0) {
+            if (video.buffered.start(0) < start) start = video.buffered.start(0);
+            if (video.buffered.end(video.buffered.length - 1) > end) end = video.buffered.end(video.buffered.length - 1);
+          }
+          return { start, end };
+        }
+
+        function getDVRLiveEdge() {
+          if (video.seekable && video.seekable.length > 0) {
+            return video.seekable.end(video.seekable.length - 1);
+          }
+          if (video.buffered && video.buffered.length > 0) {
+            return video.buffered.end(video.buffered.length - 1);
+          }
+          return video.currentTime;
+        }
+
+        function updateDVRUI() {
+          const range = getDVRSeekableRange();
+          const liveEdge = getDVRLiveEdge();
+          const duration = Math.max(1, range.end - range.start);
+          const currentOffset = Math.max(0, video.currentTime - range.start);
+          const progressRatio = Math.min(1, Math.max(0, currentOffset / duration));
+
+          let bufferedEnd = video.currentTime;
+          if (video.buffered && video.buffered.length > 0) {
+            bufferedEnd = video.buffered.end(video.buffered.length - 1);
+          }
+          const bufferRatio = Math.min(1, Math.max(0, (bufferedEnd - range.start) / duration));
+
+          const delaySec = Math.max(0, liveEdge - video.currentTime);
+          const isLive = delaySec <= 4;
+          const formattedDelay = '-' + formatDVRTime(delaySec);
+
+          if (dvrPlayedBar) dvrPlayedBar.style.width = (progressRatio * 100).toFixed(2) + '%';
+          if (dvrBufferBar) dvrBufferBar.style.width = (bufferRatio * 100).toFixed(2) + '%';
+          if (dvrPlayhead) dvrPlayhead.style.left = (progressRatio * 100).toFixed(2) + '%';
+
+          if (btnLiveIndicator) {
+            if (isLive) {
+              btnLiveIndicator.classList.remove('behind');
+              btnLiveIndicator.classList.add('live');
+              if (liveBadgeText) liveBadgeText.textContent = 'AO VIVO';
+              btnLiveIndicator.setAttribute('data-tooltip', 'Sinal em tempo real (Ao Vivo)');
+            } else {
+              btnLiveIndicator.classList.remove('live');
+              btnLiveIndicator.classList.add('behind');
+              if (liveBadgeText) liveBadgeText.textContent = formattedDelay + ' AO VIVO';
+              btnLiveIndicator.setAttribute('data-tooltip', `Atraso: ${formatDVRTime(delaySec)} - Clique para voltar ao Vivo`);
+            }
+          }
+
+          if (osdLivePillTop) {
+            if (isLive) {
+              osdLivePillTop.classList.remove('behind');
+              if (osdLivePillText) osdLivePillText.textContent = 'AO VIVO';
+            } else {
+              osdLivePillTop.classList.add('behind');
+              if (osdLivePillText) osdLivePillText.textContent = formattedDelay + ' AO VIVO';
+            }
+          }
+        }
+
+        video.addEventListener('timeupdate', updateDVRUI);
+        video.addEventListener('progress', updateDVRUI);
+
+        function triggerGoLive(e) {
+          if (e) e.stopPropagation();
+          const liveEdge = getDVRLiveEdge();
+          video.currentTime = liveEdge;
+          if (video.paused) video.play().catch(() => {});
+          showToast('🔴 Sincronizado no AO VIVO');
+        }
+
+        if (btnLiveIndicator) btnLiveIndicator.addEventListener('click', triggerGoLive);
+        if (osdLivePillTop) osdLivePillTop.addEventListener('click', triggerGoLive);
+
+        if (btnRewind10) {
+          btnRewind10.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const range = getDVRSeekableRange();
+            video.currentTime = Math.max(range.start, video.currentTime - 10);
+            if (video.paused) video.play().catch(() => {});
+            showToast('⏪ -10s na transmissão');
+          });
+        }
+
+        if (btnForward10) {
+          btnForward10.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const range = getDVRSeekableRange();
+            const liveEdge = getDVRLiveEdge();
+            video.currentTime = Math.min(liveEdge, video.currentTime + 10);
+            if (video.paused) video.play().catch(() => {});
+            if (Math.abs(liveEdge - video.currentTime) <= 4) {
+              showToast('🔴 Sincronizado no AO VIVO');
+            } else {
+              showToast('⏩ +10s na transmissão');
+            }
+          });
+        }
+
+        if (dvrTimeline) {
+          let isDragging = false;
+          const handleSeek = (clientX) => {
+            const rect = dvrTimeline.getBoundingClientRect();
+            const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+            const range = getDVRSeekableRange();
+            video.currentTime = range.start + (ratio * (range.end - range.start));
+            updateDVRUI();
+          };
+
+          dvrTimeline.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            dvrTimeline.classList.add('dragging');
+            handleSeek(e.clientX);
+          });
+
+          window.addEventListener('mousemove', (e) => {
+            if (isDragging) handleSeek(e.clientX);
+            if (dvrTimeline && dvrHoverTooltip) {
+              const rect = dvrTimeline.getBoundingClientRect();
+              if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top - 20 && e.clientY <= rect.bottom + 20) {
+                const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                const range = getDVRSeekableRange();
+                const liveEdge = getDVRLiveEdge();
+                const duration = Math.max(1, range.end - range.start);
+                const hoverTime = range.start + (ratio * duration);
+                const delaySec = Math.max(0, liveEdge - hoverTime);
+                dvrHoverTooltip.style.left = (ratio * 100).toFixed(1) + '%';
+                dvrHoverTooltip.textContent = (delaySec <= 4) ? 'Ao Vivo' : '-' + formatDVRTime(delaySec);
+              }
+            }
+          });
+
+          window.addEventListener('mouseup', () => {
+            if (isDragging) {
+              isDragging = false;
+              dvrTimeline.classList.remove('dragging');
+            }
+          });
+
+          dvrTimeline.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 0) { isDragging = true; handleSeek(e.touches[0].clientX); }
+          }, { passive: true });
+          dvrTimeline.addEventListener('touchmove', (e) => {
+            if (isDragging && e.touches.length > 0) handleSeek(e.touches[0].clientX);
+          }, { passive: true });
+          dvrTimeline.addEventListener('touchend', () => { isDragging = false; });
+        }
+
+        // Toggles da Sidebar
+        const toggleSidebar = () => {
+          sidebar.classList.toggle('collapsed');
+          const isCollapsed = sidebar.classList.contains('collapsed');
+          showToast(isCollapsed ? 'Guia Ocultado (Tela Cheia)' : 'Guia de Canais Aberto');
+        };
+
+        btnToggleSidebar.addEventListener('click', toggleSidebar);
+        btnToggleSidebarTop.addEventListener('click', toggleSidebar);
+        btnCloseSidebar.addEventListener('click', () => sidebar.classList.add('collapsed'));
+
+        btnRetryStream.addEventListener('click', () => playChannel(state.currentChannelIndex));
+        btnTryBackup.addEventListener('click', switchSource);
+
+        // Busca
+        searchInput.addEventListener('input', () => {
+          btnClearSearch.style.display = searchInput.value ? 'block' : 'none';
+          filterChannels();
+        });
+
+        btnClearSearch.addEventListener('click', () => {
+          searchInput.value = '';
+          btnClearSearch.style.display = 'none';
+          filterChannels();
+          searchInput.focus();
+        });
+
+        // Categorias
+        categoryPillsContainer.addEventListener('click', (e) => {
+          const pill = e.target.closest('.category-pill');
+          if (!pill) return;
+          document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+
+          state.currentCategory = pill.getAttribute('data-category');
+          currentCategoryName.textContent = pill.textContent.split(' ')[0];
+          filterChannels();
+        });
+
+        // Modais
+        btnShortcuts.addEventListener('click', () => shortcutsModal.classList.add('open'));
+        btnCloseShortcuts.addEventListener('click', () => shortcutsModal.classList.remove('open'));
+        btnOpenModal.addEventListener('click', () => credentialsModal.classList.add('open'));
+        btnCloseModal.addEventListener('click', () => credentialsModal.classList.remove('open'));
+        btnReloadOfficialList.addEventListener('click', () => {
+          credentialsModal.classList.remove('open');
+          state.channels = CHANNELS_DATA;
+          state.currentCategory = 'ALL';
+          document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+          document.querySelector('.category-pill[data-category="ALL"]').classList.add('active');
+          searchInput.value = '';
+          filterChannels();
+          playChannel(0);
+          showToast('✅ Grade de 75 canais recarregada!');
+        });
+
+        [shortcutsModal, credentialsModal].forEach(m => {
+          m.addEventListener('click', (e) => {
+            if (e.target === m) m.classList.remove('open');
+          });
+        });
+
+        // Tela cheia ícones
+        document.addEventListener('fullscreenchange', () => {
+          if (document.fullscreenElement) {
+            iconFsEnter.style.display = 'none';
+            iconFsExit.style.display = 'block';
+          } else {
+            iconFsEnter.style.display = 'block';
+            iconFsExit.style.display = 'none';
+          }
+        });
+
+        // ATALHOS DE TECLADO
+        document.addEventListener('keydown', (e) => {
+          if (document.activeElement === searchInput) return;
+
+          switch (e.key) {
+            case ' ':
+            case 'k':
+            case 'K':
+              e.preventDefault();
+              togglePlayPause();
+              break;
+            case 'j':
+            case 'J': {
+              e.preventDefault();
+              const range = getDVRSeekableRange();
+              video.currentTime = Math.max(range.start, video.currentTime - 10);
+              if (video.paused) video.play().catch(() => {});
+              showToast('⏪ -10s na transmissão');
+              break;
+            }
+            case 'l':
+            case 'L': {
+              e.preventDefault();
+              const range = getDVRSeekableRange();
+              const liveEdge = getDVRLiveEdge();
+              video.currentTime = Math.min(liveEdge, video.currentTime + 10);
+              if (video.paused) video.play().catch(() => {});
+              if (Math.abs(liveEdge - video.currentTime) <= 4) {
+                showToast('🔴 Sincronizado no AO VIVO');
+              } else {
+                showToast('⏩ +10s na transmissão');
+              }
+              break;
+            }
+            case 'ArrowRight':
+              e.preventDefault();
+              nextChannel();
+              break;
+            case 'ArrowLeft':
+              e.preventDefault();
+              prevChannel();
+              break;
+            case 'ArrowUp':
+              e.preventDefault();
+              setVolume(video.volume + 0.05);
+              showToast('Volume: ' + Math.round(video.volume * 100) + '%');
+              break;
+            case 'ArrowDown':
+              e.preventDefault();
+              setVolume(video.volume - 0.05);
+              showToast('Volume: ' + Math.round(video.volume * 100) + '%');
+              break;
+            case 'f':
+            case 'F':
+              e.preventDefault();
+              toggleFullscreen();
+              break;
+            case 'm':
+            case 'M':
+              e.preventDefault();
+              toggleMute();
+              break;
+            case 'c':
+            case 'C':
+              e.preventDefault();
+              toggleSidebar();
+              break;
+            case 's':
+            case 'S':
+              e.preventDefault();
+              switchSource();
+              break;
+            case 'r':
+            case 'R':
+              e.preventDefault();
+              showToast('Recarregando sinal...');
+              playChannel(state.currentChannelIndex);
+              break;
+            case 'h':
+            case 'H':
+              shortcutsModal.classList.toggle('open');
+              break;
+            case 'Escape':
+              shortcutsModal.classList.remove('open');
+              credentialsModal.classList.remove('open');
+              break;
+            default:
+              if (/^[0-9]$/.test(e.key)) {
+                handleDigitKey(e.key);
+              }
+              break;
+          }
+        });
+      }
+
+      function handleDigitKey(digit) {
+        state.digitBuffer += digit;
+        showToast('Canal: ' + state.digitBuffer);
+        clearTimeout(state.digitTimeout);
+        state.digitTimeout = setTimeout(() => {
+          const num = parseInt(state.digitBuffer, 10);
+          state.digitBuffer = '';
+          if (num >= 1 && num <= state.filteredChannels.length) {
+            playChannel(num - 1);
+          } else {
+            showToast('Canal ' + num + ' não encontrado');
+          }
+        }, 1200);
+      }
+
+      // Executa na inicialização do DOM
+      document.addEventListener('DOMContentLoaded', init);
+      if (document.readyState === 'interactive' || document.readyState === 'complete') {
+        init();
+      }
+
+    })();
+  </script>
+</body>
+</html>

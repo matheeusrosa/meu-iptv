@@ -1,0 +1,530 @@
+[
+  {
+    "id": "ch-history",
+    "name": "History Channel HD",
+    "group": "Documentários & História",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/History_%282021%29.svg/500px-History_%282021%29.svg.png",
+    "tvgId": "History.br",
+    "url": "http://170.83.16.50/HISTORY/index.m3u8"
+  },
+  {
+    "id": "ch-history-2",
+    "name": "History 2 HD",
+    "group": "Documentários & História",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/History2_logo_%282022%29.svg/500px-History2_logo_%282022%29.svg.png",
+    "tvgId": "History2.br",
+    "url": "http://45.177.114.114/HISTORY_2/index.m3u8"
+  },
+  {
+    "id": "ch-discovery",
+    "name": "Discovery Channel HD",
+    "group": "Documentários & História",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Discovery_Channel_2019.svg/960px-Discovery_Channel_2019.svg.png",
+    "tvgId": "DiscoveryChannel.br",
+    "url": "http://170.83.16.50/DISCOVERY_CHANNEL/index.m3u8"
+  },
+  {
+    "id": "ch-discovery-turbo",
+    "name": "Discovery Turbo HD",
+    "group": "Documentários & História",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Discovery_Turbo_logo_2019.svg/960px-Discovery_Turbo_logo_2019.svg.png",
+    "tvgId": "DiscoveryTurbo.br",
+    "url": "http://170.83.16.50/DISCOVERY_TURBO/index.m3u8"
+  },
+  {
+    "id": "ch-discovery-science",
+    "name": "Discovery Science HD",
+    "group": "Documentários & História",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Discovery_Science_2012_logo.svg/960px-Discovery_Science_2012_logo.svg.png",
+    "tvgId": "DiscoveryScience.br",
+    "url": "http://170.83.16.50/DISCOVERY_SCIENCE/index.m3u8"
+  },
+  {
+    "id": "ch-discovery-hh",
+    "name": "Discovery Home & Health HD",
+    "group": "Documentários & História",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Discovery_Home_%26_Health_2019_logo.svg/960px-Discovery_Home_%26_Health_2019_logo.svg.png",
+    "tvgId": "DiscoveryHomeHealth.br",
+    "url": "http://170.83.16.50/DISCOVERY_HOME_HEALTH/index.m3u8"
+  },
+  {
+    "id": "ch-discovery-theater",
+    "name": "Discovery Theater HD",
+    "group": "Documentários & História",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Discovery_Theater_2018.png/960px-Discovery_Theater_2018.png",
+    "tvgId": "DiscoveryTheater.br",
+    "url": "http://170.83.16.50/DISCOVERY_THEATER/index.m3u8"
+  },
+  {
+    "id": "ch-discovery-world",
+    "name": "Discovery World HD",
+    "group": "Documentários & História",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Discovery_World_2016_logo.svg/960px-Discovery_World_2016_logo.svg.png",
+    "tvgId": "DiscoveryWorld.br",
+    "url": "http://170.83.16.50/DISCOVERY_WORLD/index.m3u8"
+  },
+  {
+    "id": "ch-animal-planet",
+    "name": "Animal Planet HD",
+    "group": "Documentários & História",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Animal_Planet_2018_logo.svg/960px-Animal_Planet_2018_logo.svg.png",
+    "tvgId": "AnimalPlanet.br",
+    "url": "http://170.83.16.50/ANIMAL_PLANET/index.m3u8"
+  },
+  {
+    "id": "ch-smithsonian",
+    "name": "Smithsonian Channel (Doc)",
+    "group": "Documentários & História",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Smithsonian_Channel_logo_2018.svg/960px-Smithsonian_Channel_logo_2018.svg.png",
+    "tvgId": "Smithsonian.us",
+    "url": "https://jmp2.uk/plu-6298bd10d88ef000073f16b7.m3u8"
+  },
+  {
+    "id": "ch-pluto-investigacao",
+    "name": "Pluto TV Investigação / Crimes",
+    "group": "Documentários & História",
+    "logo": "https://images.pluto.tv/channels/5f32cf37c9ff2b00082adbc8/colorLogoPNG.png",
+    "tvgId": "PlutoInvestigacao.br",
+    "url": "https://jmp2.uk/plu-5f32cf37c9ff2b00082adbc8.m3u8"
+  },
+  {
+    "id": "ch-pluto-natureza",
+    "name": "Pluto TV Animais & Natureza",
+    "group": "Documentários & História",
+    "logo": "https://images.pluto.tv/channels/6474aa984cfc2c0008883a92/colorLogoPNG.png",
+    "tvgId": "PlutoAnimais.br",
+    "url": "https://jmp2.uk/plu-6474aa984cfc2c0008883a92.m3u8"
+  },
+  {
+    "id": "ch-megapix",
+    "name": "Megapix HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Megapix_logo_2021.svg/960px-Megapix_logo_2021.svg.png",
+    "tvgId": "Megapix.br",
+    "url": "https://jmp2.uk/plu-61b790b985706b00072cb797.m3u8"
+  },
+  {
+    "id": "ch-tc-premium",
+    "name": "Telecine Premium HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Telecine_Premium_logo.svg/960px-Telecine_Premium_logo.svg.png",
+    "tvgId": "TelecinePremium.br",
+    "url": "https://jmp2.uk/plu-5f120e94a5714d00074576a1.m3u8"
+  },
+  {
+    "id": "ch-tc-action",
+    "name": "Telecine Action HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Telecine_Action_logo.svg/960px-Telecine_Action_logo.svg.png",
+    "tvgId": "TelecineAction.br",
+    "url": "https://jmp2.uk/plu-5f120f41b7d403000783a6d6.m3u8"
+  },
+  {
+    "id": "ch-tc-pipoca",
+    "name": "Telecine Pipoca HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Telecine_Pipoca_logo.svg/960px-Telecine_Pipoca_logo.svg.png",
+    "tvgId": "TelecinePipoca.br",
+    "url": "https://jmp2.uk/plu-62545ed3dab4380007582f7c.m3u8"
+  },
+  {
+    "id": "ch-tc-touch",
+    "name": "Telecine Touch HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Telecine_Touch_logo.svg/960px-Telecine_Touch_logo.svg.png",
+    "tvgId": "TelecineTouch.br",
+    "url": "https://jmp2.uk/plu-5f171f988ab9780007fa95ea.m3u8"
+  },
+  {
+    "id": "ch-tc-fun",
+    "name": "Telecine Fun HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Telecine_Fun_logo.svg/960px-Telecine_Fun_logo.svg.png",
+    "tvgId": "TelecineFun.br",
+    "url": "https://jmp2.uk/plu-5f12101f0b12f00007844c7c.m3u8"
+  },
+  {
+    "id": "ch-tc-cult",
+    "name": "Telecine Cult HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Telecine_Cult_logo.svg/960px-Telecine_Cult_logo.svg.png",
+    "tvgId": "TelecineCult.br",
+    "url": "https://jmp2.uk/plu-5fa1612a669ba0000702017b.m3u8"
+  },
+  {
+    "id": "ch-sony-movies",
+    "name": "Sony Movies HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Sony_Movies_Logo.svg/500px-Sony_Movies_Logo.svg.png",
+    "tvgId": "SonyMovies.br",
+    "url": "http://45.162.64.114/SONY_MOVIES/index.m3u8"
+  },
+  {
+    "id": "ch-studio-universal",
+    "name": "Studio Universal HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/StudioUniversal2016.png/960px-StudioUniversal2016.png",
+    "tvgId": "StudioUniversal.br",
+    "url": "http://187.102.210.46/universo/index.m3u8"
+  },
+  {
+    "id": "ch-sony-channel",
+    "name": "Sony Channel HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Sony_Channel_Logo.png/960px-Sony_Channel_Logo.png",
+    "tvgId": "SonyChannel.br",
+    "url": "http://170.83.16.50/SONY_CHANNEL/index.m3u8"
+  },
+  {
+    "id": "ch-axn",
+    "name": "AXN HD (Ação & Suspense)",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/AXN_logo_%282015%29.svg/960px-AXN_logo_%282015%29.svg.png",
+    "tvgId": "AXN.br",
+    "url": "http://170.83.16.50/AXN/index.m3u8"
+  },
+  {
+    "id": "ch-space",
+    "name": "Space HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Space_2020.svg/960px-Space_2020.svg.png",
+    "tvgId": "Space.br",
+    "url": "http://45.162.64.114/SPACE/index.m3u8"
+  },
+  {
+    "id": "ch-tnt",
+    "name": "TNT HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/TNT_2016_logo.svg/960px-TNT_2016_logo.svg.png",
+    "tvgId": "TNT.br",
+    "url": "http://45.162.64.114/TNT/index.m3u8"
+  },
+  {
+    "id": "ch-ae",
+    "name": "A&E Latin America HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/A%26E_Network_logo.svg/960px-A%26E_Network_logo.svg.png",
+    "tvgId": "AELatinAmerica.us",
+    "url": "http://170.83.16.50/AeE/index.m3u8"
+  },
+  {
+    "id": "ch-amc",
+    "name": "AMC Brasil HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/AMC_logo_2019.svg/960px-AMC_logo_2019.svg.png",
+    "tvgId": "AMCLatinAmerica.us",
+    "url": "http://170.83.49.66:8083/AMCHD/index.m3u8"
+  },
+  {
+    "id": "ch-tnt-novelas",
+    "name": "TNT Novelas HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/TNT_Novelas_2025.svg/960px-TNT_Novelas_2025.svg.png",
+    "tvgId": "TNTNovelas.us",
+    "url": "http://45.162.64.114/TNT_NOVELAS/index.m3u8"
+  },
+  {
+    "id": "ch-adrenalina",
+    "name": "Adrenalina Pura (Filmes Ação)",
+    "group": "Filmes & Cinema",
+    "logo": "https://i.imgur.com/Pvid2iH.png",
+    "tvgId": "AdrenalinaPura.br",
+    "url": "https://jmp2.uk/plu-61b790b985706b00072cb797.m3u8"
+  },
+  {
+    "id": "ch-pluto-sucessos",
+    "name": "Cine Sucessos (Filmes)",
+    "group": "Filmes & Cinema",
+    "logo": "https://images.pluto.tv/channels/5f120e94a5714d00074576a1/colorLogoPNG.png",
+    "tvgId": "PlutoCineSucessos.br",
+    "url": "https://jmp2.uk/plu-5f120e94a5714d00074576a1.m3u8"
+  },
+  {
+    "id": "ch-pluto-terror",
+    "name": "Cine Terror HD",
+    "group": "Filmes & Cinema",
+    "logo": "https://images.pluto.tv/channels/5f12111c9e6c2c00078ef3bb/colorLogoPNG.png",
+    "tvgId": "PlutoCineTerror.br",
+    "url": "https://jmp2.uk/plu-5f12111c9e6c2c00078ef3bb.m3u8"
+  },
+  {
+    "id": "ch-pluto-ficcao",
+    "name": "Cine Ficção Científica",
+    "group": "Filmes & Cinema",
+    "logo": "https://images.pluto.tv/channels/5fa15ad6367e170007cdd098/colorLogoPNG.png",
+    "tvgId": "PlutoFiccao.br",
+    "url": "https://jmp2.uk/plu-5fa15ad6367e170007cdd098.m3u8"
+  },
+  {
+    "id": "ch-pluto-nacionais",
+    "name": "Filmes Nacionais",
+    "group": "Filmes & Cinema",
+    "logo": "https://images.pluto.tv/channels/5f5a545d0dbf7f0007c09408/colorLogoPNG.png",
+    "tvgId": "PlutoFilmesNacionais.br",
+    "url": "https://jmp2.uk/plu-5f5a545d0dbf7f0007c09408.m3u8"
+  },
+  {
+    "id": "ch-discovery-kids",
+    "name": "Discovery Kids HD",
+    "group": "Infantil & Desenhos",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Discovery_Kids_logo_2021.svg/960px-Discovery_Kids_logo_2021.svg.png",
+    "tvgId": "DiscoveryKids.br",
+    "url": "http://170.83.16.50/DISCOVERY_KIDS/index.m3u8"
+  },
+  {
+    "id": "ch-cartoon",
+    "name": "Cartoon Network HD",
+    "group": "Infantil & Desenhos",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Cartoon_Network_2010_logo.svg/960px-Cartoon_Network_2010_logo.svg.png",
+    "tvgId": "CartoonNetwork.br",
+    "url": "http://170.83.16.50/CARTOON/index.m3u8"
+  },
+  {
+    "id": "ch-boomerang",
+    "name": "Boomerang / Cartoonito HD",
+    "group": "Infantil & Desenhos",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Boomerang_2014_logo.svg/960px-Boomerang_2014_logo.svg.png",
+    "tvgId": "Boomerang.br",
+    "url": "http://45.162.64.114/BOOMERANG/index.m3u8"
+  },
+  {
+    "id": "ch-zoomoo-kids",
+    "name": "ZooMoo Kids HD",
+    "group": "Infantil & Desenhos",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Zoomoo_Kids.png/960px-Zoomoo_Kids.png",
+    "tvgId": "ZooMooKids.br",
+    "url": "http://45.162.64.114/ZOOMOO_KIDS/index.m3u8"
+  },
+  {
+    "id": "ch-box-kids",
+    "name": "Box Kids TV HD",
+    "group": "Infantil & Desenhos",
+    "logo": "https://i.imgur.com/gC5uW1k.png",
+    "tvgId": "BoxKids.br",
+    "url": "http://170.83.49.66:8083/BOXKIDSHD/index.m3u8"
+  },
+  {
+    "id": "ch-turma-monica",
+    "name": "Turma da Mônica (Pluto TV)",
+    "group": "Infantil & Desenhos",
+    "logo": "https://i.imgur.com/nrvPPrW.png",
+    "tvgId": "TurmaDaMonica.br",
+    "url": "https://jmp2.uk/plu-5f997e44949bc70007a6941e.m3u8"
+  },
+  {
+    "id": "ch-bob-esponja",
+    "name": "Bob Esponja Calça Quadrada",
+    "group": "Infantil & Desenhos",
+    "logo": "https://images.pluto.tv/channels/62545c0b002f4b0007688b61/colorLogoPNG.png",
+    "tvgId": "BobEsponja.br",
+    "url": "https://jmp2.uk/plu-62545c0b002f4b0007688b61.m3u8"
+  },
+  {
+    "id": "ch-avatar",
+    "name": "Avatar: A Lenda de Aang",
+    "group": "Infantil & Desenhos",
+    "logo": "https://images.pluto.tv/channels/6759eeb1bd523200083b4f29/colorLogoPNG.png",
+    "tvgId": "Avatar.br",
+    "url": "https://jmp2.uk/plu-6759eeb1bd523200083b4f29.m3u8"
+  },
+  {
+    "id": "ch-babyfirst",
+    "name": "BabyFirst Kids Brasil",
+    "group": "Infantil & Desenhos",
+    "logo": "https://i.imgur.com/WxLHBwu.png",
+    "tvgId": "BabyFirst.br",
+    "url": "https://jmp2.uk/plu-5f4fb4cf605ddf000748e16f.m3u8"
+  },
+  {
+    "id": "ch-sportv-3",
+    "name": "SporTV 3 HD",
+    "group": "Esportes & Combate",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/SporTV_3_logo_2021.svg/960px-SporTV_3_logo_2021.svg.png",
+    "tvgId": "SporTV3.br",
+    "url": "http://170.83.49.66:8083/SPORTV3HD/index.m3u8"
+  },
+  {
+    "id": "ch-sportv-1",
+    "name": "SporTV HD",
+    "group": "Esportes & Combate",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/SporTV_logo_2021.svg/960px-SporTV_logo_2021.svg.png",
+    "tvgId": "SporTV.br",
+    "url": "http://170.83.49.66:8083/SPORTV3HD/index.m3u8"
+  },
+  {
+    "id": "ch-sportv-2",
+    "name": "SporTV 2 HD",
+    "group": "Esportes & Combate",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/SporTV_2_logo_2021.svg/960px-SporTV_2_logo_2021.svg.png",
+    "tvgId": "SporTV2.br",
+    "url": "http://170.83.49.66:8083/SPORTV3HD/index.m3u8"
+  },
+  {
+    "id": "ch-premiere",
+    "name": "Premiere Clubes HD",
+    "group": "Esportes & Combate",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Premiere_logo_2021.svg/960px-Premiere_logo_2021.svg.png",
+    "tvgId": "Premiere.br",
+    "url": "https://jmp2.uk/plu-6806d62369aec5b19cd628c0.m3u8"
+  },
+  {
+    "id": "ch-combate",
+    "name": "Combate HD",
+    "group": "Esportes & Combate",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Canal_Combate_logo_2021.svg/960px-Canal_Combate_logo_2021.svg.png",
+    "tvgId": "Combate.br",
+    "url": "https://jmp2.uk/plu-6806d62369aec5b19cd628c0.m3u8"
+  },
+  {
+    "id": "ch-espn",
+    "name": "ESPN HD",
+    "group": "Esportes & Combate",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/ESPN_wordmark.svg/960px-ESPN_wordmark.svg.png",
+    "tvgId": "ESPN.br",
+    "url": "http://170.83.16.50/ESPN/index.m3u8"
+  },
+  {
+    "id": "ch-espn-brasil",
+    "name": "ESPN Brasil HD",
+    "group": "Esportes & Combate",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/ESPN_wordmark.svg/960px-ESPN_wordmark.svg.png",
+    "tvgId": "ESPNBrasil.br",
+    "url": "http://45.162.64.114/ESPN_BRASIL/index.m3u8"
+  },
+  {
+    "id": "ch-espn-extra",
+    "name": "ESPN Extra HD",
+    "group": "Esportes & Combate",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/ESPN_wordmark.svg/960px-ESPN_wordmark.svg.png",
+    "tvgId": "ESPNExtra.br",
+    "url": "http://45.162.64.114/ESPN_EXTRA/index.m3u8"
+  },
+  {
+    "id": "ch-band-sports",
+    "name": "Band Sports HD",
+    "group": "Esportes & Combate",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/BandSports_logo_2018.svg/960px-BandSports_logo_2018.svg.png",
+    "tvgId": "BandSports.br",
+    "url": "http://170.83.16.50/BAND_SPORTS/index.m3u8"
+  },
+  {
+    "id": "ch-woohoo",
+    "name": "WooHoo (Esportes Radicais & Ação)",
+    "group": "Esportes & Combate",
+    "logo": "https://upload.wikimedia.org/wikipedia/pt/thumb/d/d4/Woohoo_logo.png/960px-Woohoo_logo.png",
+    "tvgId": "WooHoo.br",
+    "url": "http://45.162.64.114/WOOHOO/index.m3u8"
+  },
+  {
+    "id": "ch-globo",
+    "name": "Rede Globo HD",
+    "group": "Globosat & Variedades",
+    "logo": "https://upload.wikimedia.org/wikipedia/pt/thumb/b/b5/TV_Globo_2021.png/960px-TV_Globo_2021.png",
+    "tvgId": "RedeGlobo.br",
+    "url": "https://media2.cdntvms.com.br/tv_morena_dorados/index.m3u8"
+  },
+  {
+    "id": "ch-futura",
+    "name": "Canal Futura (Globo / FRM)",
+    "group": "Globosat & Variedades",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Futura_2023.png/960px-Futura_2023.png",
+    "tvgId": "CanalFutura.br",
+    "url": "http://45.162.64.114/FUTURA/index.m3u8"
+  },
+  {
+    "id": "ch-globonews",
+    "name": "GloboNews HD",
+    "group": "Globosat & Variedades",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/GloboNews_logo_2023.svg/960px-GloboNews_logo_2023.svg.png",
+    "tvgId": "GloboNews.br",
+    "url": "https://dai.google.com/linear/hls/event/1XSOdtQ0SH2G8OEmEfGgjQ/master.m3u8"
+  },
+  {
+    "id": "ch-multishow",
+    "name": "Multishow HD",
+    "group": "Globosat & Variedades",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Multishow_logo_2021.svg/960px-Multishow_logo_2021.svg.png",
+    "tvgId": "Multishow.br",
+    "url": "https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01131-tracetv-tracebrazuca-samsungbr/playlist.m3u8"
+  },
+  {
+    "id": "ch-gnt",
+    "name": "GNT HD / Gastronomia",
+    "group": "Globosat & Variedades",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/GNT_logo_2022.svg/960px-GNT_logo_2022.svg.png",
+    "tvgId": "GNT.br",
+    "url": "https://jmp2.uk/plu-5fd1419a3b4f4b000773ba85.m3u8"
+  },
+  {
+    "id": "ch-viva",
+    "name": "Viva HD (Novelas & Clássicos)",
+    "group": "Globosat & Variedades",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Viva_logo_2021.svg/960px-Viva_logo_2021.svg.png",
+    "tvgId": "Viva.br",
+    "url": "http://45.162.64.114/TNT_NOVELAS/index.m3u8"
+  },
+  {
+    "id": "ch-record-news",
+    "name": "Record News HD",
+    "group": "Notícias & TV Aberta",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Record_News_2023.svg/960px-Record_News_2023.svg.png",
+    "tvgId": "RecordNews.br",
+    "url": "http://170.83.16.50/RECORD_NEWS/index.m3u8"
+  },
+  {
+    "id": "ch-sbt-news",
+    "name": "SBT News Ao Vivo",
+    "group": "Notícias & TV Aberta",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/SBT_News_2025.svg/960px-SBT_News_2025.svg.png",
+    "tvgId": "SBTNews.br",
+    "url": "https://dai.google.com/linear/hls/event/1XSOdtQ0SH2G8OEmEfGgjQ/master.m3u8"
+  },
+  {
+    "id": "ch-jp-news",
+    "name": "Jovem Pan News HD",
+    "group": "Notícias & TV Aberta",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Jovem_Pan_News_logo_2021.svg/960px-Jovem_Pan_News_logo_2021.svg.png",
+    "tvgId": "JovemPanNews.br",
+    "url": "http://170.83.49.66:8083/JOVEMPANNEWSHD/index.m3u8"
+  },
+  {
+    "id": "ch-bmc-news",
+    "name": "BM&C News HD (Finanças & Negócios)",
+    "group": "Notícias & TV Aberta",
+    "logo": "https://i.imgur.com/pOUY2Uz.png",
+    "tvgId": "BMCNews.br",
+    "url": "https://jmp2.uk/plu-666c9c60a7efd40008f552f0.m3u8"
+  },
+  {
+    "id": "ch-tv-brasil",
+    "name": "TV Brasil HD (EBC Nacional)",
+    "group": "Notícias & TV Aberta",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/TvBrasil2023.png/960px-TvBrasil2023.png",
+    "tvgId": "TVBrasil.br",
+    "url": "http://45.162.64.114/TV_BRASIL/index.m3u8"
+  },
+  {
+    "id": "ch-tv-cultura",
+    "name": "TV Cultura HD",
+    "group": "Notícias & TV Aberta",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/TV_Cultura_2020.svg/960px-TV_Cultura_2020.svg.png",
+    "tvgId": "TVCultura.br",
+    "url": "http://45.162.64.114/TV_CULTURA/index.m3u8"
+  },
+  {
+    "id": "ch-arte1",
+    "name": "Arte 1 (Cinema, Música & Arte)",
+    "group": "Notícias & TV Aberta",
+    "logo": "https://i.imgur.com/Ivnk7A6.png",
+    "tvgId": "Arte1.br",
+    "url": "http://45.162.64.114/ARTE1/index.m3u8"
+  },
+  {
+    "id": "ch-playtv",
+    "name": "Play TV (Games & Cultura Pop)",
+    "group": "Notícias & TV Aberta",
+    "logo": "https://upload.wikimedia.org/wikipedia/pt/thumb/d/d4/Logotipo_da_PlayTV_%282023%29.png/960px-Logotipo_da_PlayTV_%282023%29.png",
+    "tvgId": "PlayTV.br",
+    "url": "http://45.162.64.114/PLAY_TV/index.m3u8"
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "name": "iptv-pro-brasil",
+  "version": "2.0.0",
+  "description": "Reprodutor Profissional de IPTV em Node.js com HLS e Grade Completa de TV",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "remote": "node scripts/start_remote.js",
+    "verify": "node scripts/verify_channels.js",
+    "logs": "node -e \"const fs = require('fs'); console.log(fs.existsSync('error_reports.log') ? fs.readFileSync('error_reports.log', 'utf8') : 'Nenhum erro registrado.');\""
+  },
+  "keywords": [
+    "iptv",
+    "streaming",
+    "hls",
+    "tv-ao-vivo",
+    "player",
+    "nodejs"
+  ],
+  "author": "IPTV Pro Brasil Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

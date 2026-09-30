@@ -1,0 +1,321 @@
+/* ==========================================================================
+   IPTV PRO BRASIL - SIDEBAR & CHANNEL LIST STYLES
+   ========================================================================== */
+
+#sidebar {
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), margin-right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 30;
+  position: relative;
+}
+
+#sidebar.collapsed {
+  margin-right: calc(-1 * var(--sidebar-width));
+  transform: translateX(100%);
+}
+
+.sidebar-header {
+  padding: 20px 20px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sidebar-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-logo svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--accent-primary);
+}
+
+.channels-total-badge {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: var(--success);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* Busca */
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box svg {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  fill: var(--text-dim);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 9px 36px 9px 36px;
+  color: #fff;
+  font-size: 0.85rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: none;
+}
+.clear-search-btn:hover {
+  color: #fff;
+}
+
+/* Categorias */
+.category-filter-row {
+  display: flex;
+  gap: 8px;
+  padding: 10px 20px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border-subtle);
+  scrollbar-width: none;
+}
+.category-filter-row::-webkit-scrollbar {
+  display: none;
+}
+
+.category-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-pill:hover {
+  color: #fff;
+  background: var(--bg-hover);
+}
+
+.category-pill.active {
+  background: var(--accent-gradient);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.4);
+}
+
+/* Meta Info */
+.channels-meta-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px 6px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+/* Lista de Canais */
+#channel-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 12px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.channel-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  position: relative;
+  border: 1px solid transparent;
+}
+
+.channel-item:hover {
+  background: var(--bg-hover);
+}
+
+.channel-item.active {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.channel-number {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  width: 26px;
+  text-align: right;
+  font-family: monospace;
+}
+.channel-item.active .channel-number {
+  color: var(--accent-cyan);
+}
+
+.channel-logo-wrapper {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.channel-logo {
+  max-width: 85%;
+  max-height: 85%;
+  object-fit: contain;
+}
+
+/* Avatar de Fallback caso o logo falhe */
+.channel-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: var(--text-muted);
+}
+.channel-item.active .channel-avatar-fallback {
+  background: var(--accent-gradient);
+  color: #fff;
+}
+
+.channel-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.channel-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.channel-item.active .channel-name {
+  color: #fff;
+  font-weight: 700;
+}
+
+.channel-group-tag {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.channel-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Equalizador animado no canal ativo */
+.equalizer-bars {
+  display: none;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+  margin-right: 4px;
+}
+.channel-item.active .equalizer-bars {
+  display: flex;
+}
+
+.eq-bar {
+  width: 3px;
+  background: var(--accent-cyan);
+  border-radius: 1px;
+  animation: eq-bounce 0.8s ease-in-out infinite alternate;
+}
+.eq-bar:nth-child(1) { height: 12px; animation-delay: 0.1s; }
+.eq-bar:nth-child(2) { height: 6px; animation-delay: 0.3s; }
+.eq-bar:nth-child(3) { height: 14px; animation-delay: 0.2s; }
+
+@keyframes eq-bounce {
+  0% { height: 3px; }
+  100% { height: 14px; }
+}
+
+.channel-fav-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+.channel-fav-btn:hover {
+  color: var(--warning);
+  transform: scale(1.2);
+}
+.channel-fav-btn.favorited {
+  color: var(--warning);
+}

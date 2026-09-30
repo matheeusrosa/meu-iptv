@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="IPTV Mobile">
+  <meta name="theme-color" content="#07090e">
+  <title>IPTV Pro Mobile - TV Ao Vivo no Celular</title>
+  
+  <link rel="stylesheet" href="/css/mobile.css">
+</head>
+<body>
+
+  <!-- 1. REPRODUTOR FIXO NO TOPO -->
+  <header class="mobile-player-section">
+    <div class="video-wrapper">
+      <video id="mobile-video" playsinline webkit-playsinline x5-playsinline preload="auto" muted autoplay></video>
+
+      <!-- Status / Carregando Overlay -->
+      <div id="player-status-overlay" class="player-status-overlay">
+        <div class="spinner"></div>
+        <div id="status-text" class="status-text">Carregando sinal...</div>
+      </div>
+
+      <!-- Alerta Flutuante: Desmutar Áudio do Autoplay -->
+      <div id="unmute-banner" class="unmute-banner hidden">
+        <span>🔊</span>
+        <span>Toque aqui para ativar o som</span>
+      </div>
+
+      <!-- Controles Sobrepostos no Vídeo -->
+      <div id="video-controls-overlay" class="video-controls-overlay">
+        <!-- Barra Superior dos Controles -->
+        <div class="controls-top-bar">
+          <div class="live-tag">
+            <div class="live-dot"></div>
+            <span>AO VIVO</span>
+          </div>
+          <div class="top-actions">
+            <button id="btn-aspect" class="btn-icon-glass" title="Ajuste de Tela">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+            </button>
+            <button id="btn-pip" class="btn-icon-glass" title="Picture-in-Picture">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><rect x="12" y="10" width="8" height="8" rx="1"/></svg>
+            </button>
+            <button id="btn-fullscreen" class="btn-icon-glass" title="Tela Cheia">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Barra Central: Troca Rápida e Play/Pause -->
+        <div class="controls-center-bar">
+          <button id="btn-prev" class="btn-center-action" title="Canal Anterior">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>
+          </button>
+          <button id="btn-play-pause" class="btn-center-action btn-play-pause-main" title="Play / Pausar">
+            <svg id="icon-play" width="26" height="26" viewBox="0 0 24 24" fill="currentColor" style="display:none; margin-left: 2px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <svg id="icon-pause" width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          </button>
+          <button id="btn-next" class="btn-center-action" title="Próximo Canal">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+          </button>
+        </div>
+
+        <!-- Barra Inferior dos Controles -->
+        <div class="controls-bottom-bar">
+          <div class="channel-quick-info">
+            <img id="channel-quick-logo" class="channel-quick-logo" src="" alt="Logo">
+            <div class="channel-quick-text">
+              <h2 id="channel-quick-name">Rede Globo HD</h2>
+              <p id="channel-quick-category">TV Aberta & Nacionais</p>
+            </div>
+          </div>
+          <button id="btn-reload" class="btn-icon-glass" title="Recarregar Sinal">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. FAIXA DE DETALHES DO CANAL ATUAL -->
+  <section class="channel-detail-strip">
+    <div class="channel-meta">
+      <div class="channel-avatar">
+        <img id="strip-logo" src="" alt="Logo">
+        <div id="strip-fallback" class="channel-avatar-fallback" style="display:none;">GL</div>
+      </div>
+      <div class="channel-names">
+        <div id="strip-name" class="channel-title">Rede Globo HD</div>
+        <div id="strip-category" class="channel-subtitle">TV Aberta & Nacionais</div>
+      </div>
+    </div>
+    <div class="strip-actions">
+      <button id="btn-fav" class="btn-strip-action" title="Favoritar Canal">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- 3. BARRA DE BUSCA -->
+  <section class="search-container">
+    <div class="search-box">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="search-input" class="search-input" type="text" placeholder="Buscar canal (ex: Globo, SBT, SporTV)..." autocomplete="off">
+      <button id="search-clear" class="search-clear" title="Limpar busca">✕</button>
+    </div>
+  </section>
+
+  <!-- 4. ROLAGEM HORIZONTAL DE CATEGORIAS -->
+  <nav id="categories-scroll" class="categories-scroll">
+    <!-- Injetado dinamicamente via mobile.js -->
+  </nav>
+
+  <!-- 5. GRADE DE CANAIS -->
+  <main class="channel-list-container">
+    <div class="channel-list-header">
+      <span class="channel-list-title">Grade de Canais</span>
+      <span id="channels-count-badge" class="channel-count-badge">60 canais</span>
+    </div>
+    <div id="channel-grid" class="channel-grid">
+      <!-- Cards de canais injetados dinamicamente -->
+    </div>
+  </main>
+
+  <!-- SCRIPTS -->
+  <script src="/js/hls.min.js"></script>
+  <script>if (!window.Hls) document.write('<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js" crossorigin="anonymous"><\/script>');</script>
+  <script src="/js/channels-data.js"></script>
+  <script src="/js/mobile.js"></script>
+</body>
+</html>
