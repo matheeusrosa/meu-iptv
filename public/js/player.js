@@ -197,13 +197,22 @@ class StreamPlayer {
       });
 
       hls.on(window.Hls.Events.ERROR, (event, data) => {
-        // Recuperação natural estilo YouTube: deixa o buffer carregar sem saltos artificiais
         if (data.details === window.Hls.ErrorDetails.BUFFER_STALLED_ERROR) {
-          if (this.hls) this.hls.startLoad();
+          if (this.hls) {
+            this.hls.startLoad();
+            if (this.video && this.hls.liveSyncPosition && this.video.currentTime < (this.hls.liveSyncPosition - 15)) {
+              this.video.currentTime = this.hls.liveSyncPosition - 4;
+            }
+          }
           return;
         }
 
         if (data.details === window.Hls.ErrorDetails.BUFFER_SEEK_OVER_HOLE) {
+          return;
+        }
+
+        if (data.details === window.Hls.ErrorDetails.FRAG_LOAD_ERROR || data.details === window.Hls.ErrorDetails.FRAG_LOAD_TIMEOUT) {
+          if (this.hls) this.hls.startLoad();
           return;
         }
 

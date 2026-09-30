@@ -15,6 +15,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const zlib = require('zlib');
 
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const PUBLIC_DIR = path.join(__dirname, 'public');
@@ -260,6 +261,11 @@ async function handleStreamProxy(req, res, targetUrl) {
           'Expires': '0'
         };
 
+        if (req.method === 'HEAD') {
+          res.writeHead(upstreamRes.statusCode || 200, responseHeaders);
+          return res.end();
+        }
+
         res.writeHead(upstreamRes.statusCode || 200, responseHeaders);
         res.end(rewritten);
       });
@@ -279,6 +285,11 @@ async function handleStreamProxy(req, res, targetUrl) {
       if (upstreamRes.headers['content-length']) responseHeaders['Content-Length'] = upstreamRes.headers['content-length'];
       if (upstreamRes.headers['content-range']) responseHeaders['Content-Range'] = upstreamRes.headers['content-range'];
       if (upstreamRes.headers['accept-ranges']) responseHeaders['Accept-Ranges'] = upstreamRes.headers['accept-ranges'];
+
+      if (req.method === 'HEAD') {
+        res.writeHead(upstreamRes.statusCode || 200, responseHeaders);
+        return res.end();
+      }
 
       res.writeHead(upstreamRes.statusCode || 200, responseHeaders);
       upstreamRes.pipe(res);
@@ -418,11 +429,19 @@ const server = http.createServer((req, res) => {
   if (pathname === '/mobile') {
     const mobileFile = path.join(PUBLIC_DIR, 'mobile.html');
     if (fs.existsSync(mobileFile)) {
-      res.writeHead(200, {
+      const acceptEncoding = (req.headers['accept-encoding'] || '').toLowerCase();
+      const headers = {
         'Content-Type': 'text/html; charset=utf-8',
         'Cache-Control': 'no-cache',
-        'Access-Control-Allow-Origin': '*'
-      });
+        'Access-Control-Allow-Origin': '*',
+        'Vary': 'Accept-Encoding'
+      };
+      if (acceptEncoding.includes('gzip')) {
+        headers['Content-Encoding'] = 'gzip';
+        res.writeHead(200, headers);
+        return fs.createReadStream(mobileFile).pipe(zlib.createGzip({ level: 6 })).pipe(res);
+      }
+      res.writeHead(200, headers);
       return fs.createReadStream(mobileFile).pipe(res);
     }
   }
@@ -476,15 +495,37 @@ const server = http.createServer((req, res) => {
 
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+    const acceptEncoding = (req.headers['accept-encoding'] || '').toLowerCase();
+    const canGzip = acceptEncoding.includes('gzip');
+    const canDeflate = acceptEncoding.includes('deflate');
+    const isCompressible = /\.(html|css|js|json|svg|m3u|m3u8)$/i.test(ext) && stats.size > 256;
 
-    res.writeHead(200, {
+    const fileHeaders = {
       'Content-Type': contentType,
-      'Content-Length': stats.size,
       'Access-Control-Allow-Origin': '*',
-      'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=3600'
-    });
+      'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=86400',
+      'Vary': 'Accept-Encoding'
+    };
 
-    fs.createReadStream(filePath).pipe(res);
+    if (req.method === 'HEAD') {
+      if (!isCompressible) fileHeaders['Content-Length'] = stats.size;
+      res.writeHead(200, fileHeaders);
+      return res.end();
+    }
+
+    if (isCompressible && canGzip) {
+      fileHeaders['Content-Encoding'] = 'gzip';
+      res.writeHead(200, fileHeaders);
+      return fs.createReadStream(filePath).pipe(zlib.createGzip({ level: 6 })).pipe(res);
+    } else if (isCompressible && canDeflate) {
+      fileHeaders['Content-Encoding'] = 'deflate';
+      res.writeHead(200, fileHeaders);
+      return fs.createReadStream(filePath).pipe(zlib.createDeflate()).pipe(res);
+    } else {
+      fileHeaders['Content-Length'] = stats.size;
+      res.writeHead(200, fileHeaders);
+      return fs.createReadStream(filePath).pipe(res);
+    }
   });
 });
 
@@ -554,4 +595,43 @@ function startServer(port) {
 }
 
 startServer(PORT);
+
+// Keep-Alive Automático 24/7 (Mantém serviços gratuitos do Render sempre ativos sem hibernar)
+function setupKeepAlive() {
+  const externalUrl = process.env.KEEP_ALIVE_URL || process.env.RENDER_EXTERNAL_URL;
+  if (!externalUrl) {
+    console.log('[Keep-Alive 24/7] ℹ️ RENDER_EXTERNAL_URL não detectado no ambiente local. Sentinela em modo local.');
+    return;
+  }
+
+  const pingUrl = externalUrl.replace(/\/$/, '') + '/api/health';
+  const PING_INTERVAL = 10 * 60 * 1000; // A cada 10 minutos (Render adormece com 15 min de inatividade)
+
+  console.log(`[Keep-Alive 24/7] 🚀 Sentinela ativa! Mantendo o servidor Render 100% acordado em: ${pingUrl}`);
+
+  function doPing() {
+    try {
+      const isHttps = pingUrl.startsWith('https');
+      const client = isHttps ? https : http;
+      const pingReq = client.get(pingUrl, { timeout: 20000 }, (pingRes) => {
+        console.log(`[Keep-Alive 24/7] 💓 Ping com sucesso (${pingRes.statusCode}) - Servidor Render mantido ativo!`);
+        pingRes.resume();
+      });
+      pingReq.on('error', (err) => {
+        console.warn(`[Keep-Alive 24/7] ⚠️ Falha transitória no auto-ping: ${err.message}`);
+      });
+      pingReq.on('timeout', () => {
+        pingReq.destroy();
+      });
+    } catch (e) {
+      console.warn('[Keep-Alive 24/7] Erro ao disparar ping:', e.message);
+    }
+  }
+
+  // Primeiro ping após 15 segundos para confirmar funcionamento
+  setTimeout(doPing, 15000);
+  setInterval(doPing, PING_INTERVAL);
+}
+
+setupKeepAlive();
 

@@ -159,23 +159,23 @@ const DEFAULT_CHANNELS_DATA = [
     "group": "History & Discovery",
     "category": "History & Discovery",
     "logo": "https://tse2.mm.bing.net/th?q=History%20Channel%20canal%20tv%20logo%20png%20transparent",
-    "url": "http://45.177.114.114/HISTORY/tracks-v3a1/mono.m3u8",
-    "backupUrl": "http://45.162.64.114/HISTORY/index.m3u8"
+    "url": "http://45.177.114.114/HISTORY/index.m3u8",
+    "backupUrl": "http://170.83.16.50/HISTORY/index.m3u8"
   },
   {
     "name": "History 2 (H2) HD",
     "group": "History & Discovery",
     "category": "History & Discovery",
     "logo": "https://tse2.mm.bing.net/th?q=History%202%20%28H2%29%20canal%20tv%20logo%20png%20transparent",
-    "url": "http://45.177.114.114/HISTORY_2/tracks-v3a1/mono.m3u8",
-    "backupUrl": ""
+    "url": "http://45.177.114.114/HISTORY_2/index.m3u8",
+    "backupUrl": "http://up.kiwi/live/351921603109/34939156/296716.m3u8"
   },
   {
     "name": "Discovery Channel HD",
     "group": "History & Discovery",
     "category": "History & Discovery",
     "logo": "https://tse2.mm.bing.net/th?q=Discovery%20Channel%20canal%20tv%20logo%20png%20transparent",
-    "url": "http://45.177.114.114/DISCOVERY_CHANNEL/tracks-v3a1/mono.m3u8",
+    "url": "http://45.177.114.114/DISCOVERY_CHANNEL/index.m3u8",
     "backupUrl": "http://45.162.64.114/DISCOVERY_CHANNEL/index.m3u8"
   },
   {
@@ -183,7 +183,7 @@ const DEFAULT_CHANNELS_DATA = [
     "group": "History & Discovery",
     "category": "History & Discovery",
     "logo": "https://tse2.mm.bing.net/th?q=Discovery%20Turbo%20canal%20tv%20logo%20png%20transparent",
-    "url": "http://45.177.114.114/DISCOVERY_TURBO/tracks-v3a1/mono.m3u8",
+    "url": "http://45.177.114.114/DISCOVERY_TURBO/index.m3u8",
     "backupUrl": "https://jmp2.uk/plu-6014761dfb91870008ea6463.m3u8"
   },
   {
@@ -192,14 +192,14 @@ const DEFAULT_CHANNELS_DATA = [
     "category": "History & Discovery",
     "logo": "https://tse2.mm.bing.net/th?q=Discovery%20Kids%20canal%20tv%20logo%20png%20transparent",
     "url": "http://45.177.114.114/DISCOVERY_KIDS/index.m3u8",
-    "backupUrl": ""
+    "backupUrl": "http://up.kiwi/live/351921603109/34939156/296738.m3u8"
   },
   {
     "name": "Discovery Science HD",
     "group": "History & Discovery",
     "category": "History & Discovery",
     "logo": "https://tse2.mm.bing.net/th?q=Discovery%20Science%20canal%20tv%20logo%20png%20transparent",
-    "url": "http://45.177.114.114/DISCOVERY_SCIENCE/tracks-v3a1/mono.m3u8",
+    "url": "http://45.177.114.114/DISCOVERY_SCIENCE/index.m3u8",
     "backupUrl": ""
   },
   {
@@ -207,7 +207,7 @@ const DEFAULT_CHANNELS_DATA = [
     "group": "History & Discovery",
     "category": "History & Discovery",
     "logo": "https://tse2.mm.bing.net/th?q=Discovery%20World%20canal%20tv%20logo%20png%20transparent",
-    "url": "http://45.177.114.114/DISCOVERY_WORLD/tracks-v3a1/mono.m3u8",
+    "url": "http://45.177.114.114/DISCOVERY_WORLD/index.m3u8",
     "backupUrl": ""
   },
   {
@@ -215,7 +215,7 @@ const DEFAULT_CHANNELS_DATA = [
     "group": "History & Discovery",
     "category": "History & Discovery",
     "logo": "https://tse2.mm.bing.net/th?q=Discovery%20Theater%20canal%20tv%20logo%20png%20transparent",
-    "url": "http://45.177.114.114/DISCOVERY_THEATER/tracks-v3a1/mono.m3u8",
+    "url": "http://45.177.114.114/DISCOVERY_THEATER/index.m3u8",
     "backupUrl": ""
   },
   {
@@ -223,7 +223,7 @@ const DEFAULT_CHANNELS_DATA = [
     "group": "History & Discovery",
     "category": "History & Discovery",
     "logo": "https://tse2.mm.bing.net/th?q=Animal%20Planet%20canal%20tv%20logo%20png%20transparent",
-    "url": "http://45.177.114.114/ANIMAL_PLANET/tracks-v3a1/mono.m3u8",
+    "url": "http://45.177.114.114/ANIMAL_PLANET/index.m3u8",
     "backupUrl": ""
   },
   {
@@ -603,3 +603,10 @@ const DEFAULT_CHANNELS_DATA = [
     "backupUrl": ""
   }
 ];
+
+if (typeof window !== 'undefined') {
+  window.DEFAULT_CHANNELS_DATA = DEFAULT_CHANNELS_DATA;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = DEFAULT_CHANNELS_DATA;
+}

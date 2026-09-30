@@ -22,32 +22,32 @@ const IPTV_CONFIG = {
     { id: 'fit-fill', label: 'Esticar Tela' },
     { id: 'fit-cover', label: 'Preencher (Zoom)' }
   ],
-  // Configuração Estilo YouTube: Estabilidade Máxima, Super Buffer Contínuo e Zero Saltos
+  // Configuração Estilo YouTube: Estabilidade Máxima, Super Buffer Contínuo e Zero Travamentos
   hlsOptions: {
     enableWorker: true,
     lowLatencyMode: false,
-    backBufferLength: 60,          // Retém 1 minuto de histórico em RAM
-    maxBufferLength: 90,           // Puxa e acumula até 90 segundos de buffer à frente da transmissão
-    maxMaxBufferLength: 180,       // Teto elástico de até 180 segundos para reter o máximo de sinal
-    maxBufferSize: 120 * 1000 * 1000, // Permite até 120 MB de reserva de vídeo na memória
-    highBufferWatchdogPeriod: 1,   // Monitora a saúde do buffer a cada 1 segundo (alimentação contínua)
-    startLevel: -1,                // Auto ABR adaptativo
-    capLevelToPlayerSize: false,   // Máxima resolução disponível sem restrição
-    startFragPrefetch: true,       // Pré-carrega o próximo segmento continuamente sem pausas
+    backBufferLength: 30,          // Retém histórico recente em RAM
+    maxBufferLength: 60,           // Puxa e acumula até 60 segundos de buffer à frente
+    maxMaxBufferLength: 120,       // Teto elástico seguro
+    maxBufferSize: 80 * 1000 * 1000,
+    highBufferWatchdogPeriod: 2,   // Monitora a saúde do buffer a cada 2 segundos
+    startLevel: -1,                // Auto ABR adaptativo (480p -> 720p -> 1080p sem travar)
+    capLevelToPlayerSize: false,
+    startFragPrefetch: true,       // Pré-carrega o próximo segmento sem pausas
     progressive: false,
-    manifestLoadingTimeOut: 20000,
-    manifestLoadingMaxRetry: 8,
-    manifestLoadingRetryDelay: 800,
-    levelLoadingTimeOut: 20000,
-    levelLoadingMaxRetry: 8,
-    fragLoadingTimeOut: 25000,
-    fragLoadingMaxRetry: 10,
-    fragLoadingRetryDelay: 1000,
-    liveSyncDurationCount: 3,      // Inicia a 3 segmentos da borda ao vivo
-    liveMaxLatencyDuration: Infinity,      // Estilo YouTube: Se cair 5s, mantém 5s atrás sem pular ou engasgar
-    liveMaxLatencyDurationCount: Infinity, // Nunca força avanço automático abrupto
+    manifestLoadingTimeOut: 15000,
+    manifestLoadingMaxRetry: 6,
+    manifestLoadingRetryDelay: 500,
+    levelLoadingTimeOut: 15000,
+    levelLoadingMaxRetry: 6,
+    fragLoadingTimeOut: 20000,
+    fragLoadingMaxRetry: 4,        // Máximo 4 tentativas (evita congelar a fila em manifests rotativos)
+    fragLoadingRetryDelay: 500,
+    liveSyncDurationCount: 2,      // Inicia a 2 segmentos da borda ao vivo (garante disponibilidade de sinal)
+    liveMaxLatencyDurationCount: 5,// Resincroniza suavemente se a queda ultrapassar a memória do servidor
     maxLiveSyncPlaybackRate: 1.0,  // Velocidade SEMPRE normal (1.0x) - sem acelerar áudio nem vídeo
-    liveDurationInfinity: true,    // Trata como streaming contínuo sem fim
-    nudgeMaxRetry: 0               // Desativa saltos forçados de timestamp (elimina vai-e-volta)
+    liveDurationInfinity: true,
+    nudgeMaxRetry: 5,              // Pula micro-buracos de timestamp sem congelar a tela
+    nudgeOffset: 0.2
   }
 };

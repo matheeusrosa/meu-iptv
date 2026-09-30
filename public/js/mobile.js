@@ -162,26 +162,29 @@
       hls = new window.Hls({
         enableWorker: true,
         lowLatencyMode: false,
-        backBufferLength: 60,          // Retém 1 minuto em RAM para retorno sem sobrecarregar o celular
-        maxBufferLength: 90,           // Mantém até 90s de buffer pré-carregado à frente (estilo YouTube)
-        maxMaxBufferLength: 180,
-        maxBufferSize: 100 * 1000 * 1000,
-        highBufferWatchdogPeriod: 1,   // Monitora e preenche o buffer a cada 1 segundo continuamente
-        startLevel: -1,                // Auto ABR
+        backBufferLength: 30,          // Retém 30s em RAM para leveza no smartphone
+        maxBufferLength: 60,           // Mantém até 60s pré-carregados à frente (estilo YouTube)
+        maxMaxBufferLength: 120,
+        maxBufferSize: 60 * 1000 * 1000,
+        highBufferWatchdogPeriod: 2,   // Monitora e preenche o buffer a cada 2s
+        startLevel: -1,                // Auto ABR adaptativo
         capLevelToPlayerSize: false,
         startFragPrefetch: true,       // Pré-carrega próximo fragmento sem micro-pausas
         progressive: false,
-        manifestLoadingTimeOut: 20000,
-        manifestLoadingMaxRetry: 8,
-        levelLoadingTimeOut: 20000,
-        fragLoadingTimeOut: 25000,
-        fragLoadingMaxRetry: 10,
-        liveSyncDurationCount: 3,      // Inicia a 3 segmentos da borda ao vivo
-        liveMaxLatencyDuration: Infinity,      // Estilo YouTube: Mantém o atraso se a conexão cair 5s, sem pular ou retroceder
-        liveMaxLatencyDurationCount: Infinity, // Sem avanço automático forçado
+        manifestLoadingTimeOut: 15000,
+        manifestLoadingMaxRetry: 6,
+        manifestLoadingRetryDelay: 500,
+        levelLoadingTimeOut: 15000,
+        levelLoadingMaxRetry: 6,
+        fragLoadingTimeOut: 20000,
+        fragLoadingMaxRetry: 4,        // Máximo 4 tentativas para evitar bloqueio em manifests rotativos
+        fragLoadingRetryDelay: 500,
+        liveSyncDurationCount: 2,      // Seguro: 2 segmentos do ao vivo (elimina erro 404 em manifests curtos)
+        liveMaxLatencyDurationCount: 5,// Resincroniza suavemente sem travamentos se a conexão cair muito
         maxLiveSyncPlaybackRate: 1.0,  // Velocidade SEMPRE 1.0x (sem acelerar áudio nem vídeo)
         liveDurationInfinity: true,
-        nudgeMaxRetry: 0               // Sem saltos de timestamp artificiais
+        nudgeMaxRetry: 5,              // Pula pequenos buracos sem congelar a reprodução
+        nudgeOffset: 0.2
       });
 
       hls.loadSource(safeUrl);
@@ -190,20 +193,37 @@
       hls.on(window.Hls.Events.MANIFEST_PARSED, (event, data) => {
         hideStatus();
         dom.video.play().then(() => {
+          dom.iconPlay.style.display = 'none';
+          dom.iconPause.style.display = 'block';
           dom.unmuteBanner.classList.remove('hidden');
-        }).catch(() => {
+          scheduleControlsHide();
+        }).catch((err) => {
+          console.warn('[Mobile Autoplay]', err);
+          dom.iconPlay.style.display = 'block';
+          dom.iconPause.style.display = 'none';
+          dom.controlsOverlay.classList.remove('auto-hidden');
           dom.unmuteBanner.classList.remove('hidden');
         });
       });
 
       hls.on(window.Hls.Events.ERROR, (event, data) => {
-        // Recuperação suave estilo YouTube: deixa o buffer encher naturalmente sem tocar em currentTime
+        // Recuperação inteligente estilo YouTube: deixa o buffer fluir naturalmente
         if (data.details === window.Hls.ErrorDetails.BUFFER_STALLED_ERROR) {
-          if (hls) hls.startLoad();
+          if (hls) {
+            hls.startLoad();
+            if (dom.video && hls.liveSyncPosition && dom.video.currentTime < (hls.liveSyncPosition - 15)) {
+              dom.video.currentTime = hls.liveSyncPosition - 4;
+            }
+          }
           return;
         }
 
         if (data.details === window.Hls.ErrorDetails.BUFFER_SEEK_OVER_HOLE) {
+          return;
+        }
+
+        if (data.details === window.Hls.ErrorDetails.FRAG_LOAD_ERROR || data.details === window.Hls.ErrorDetails.FRAG_LOAD_TIMEOUT) {
+          if (hls) hls.startLoad();
           return;
         }
 
@@ -212,13 +232,13 @@
           switch (data.type) {
             case window.Hls.ErrorTypes.NETWORK_ERROR:
               if (!isUsingProxy) {
-                // Tenta via Proxy local
+                // Tenta via Proxy seguro
                 playChannel(currentChannelIndex, isUsingBackup, true);
               } else if (!isUsingBackup && channel.backupUrl) {
                 // Tenta sinal reserva
                 playChannel(currentChannelIndex, true, false);
               } else {
-                showStatus('Canal indisponível no momento');
+                showStatus('Canal indisponível no momento. Toque para tentar.');
                 setTimeout(hideStatus, 4000);
               }
               break;
@@ -231,8 +251,8 @@
               if (!isUsingBackup && channel.backupUrl) {
                 playChannel(currentChannelIndex, true, false);
               } else {
-                showStatus('Erro ao reproduzir canal');
-                setTimeout(hideStatus, 4000);
+                showStatus('Reconectando canal...');
+                setTimeout(() => playChannel(currentChannelIndex), 2000);
               }
               break;
           }
@@ -242,12 +262,20 @@
     } else if (dom.video.canPlayType('application/vnd.apple.mpegurl')) {
       // Suporte Nativo Apple Safari (iOS / iPadOS)
       dom.video.src = safeUrl;
+      dom.video.load();
       
       const onCanPlay = () => {
         hideStatus();
         dom.video.play().then(() => {
+          dom.iconPlay.style.display = 'none';
+          dom.iconPause.style.display = 'block';
           dom.unmuteBanner.classList.remove('hidden');
-        }).catch(() => {
+          scheduleControlsHide();
+        }).catch((err) => {
+          console.warn('[iOS Autoplay]', err);
+          dom.iconPlay.style.display = 'block';
+          dom.iconPause.style.display = 'none';
+          dom.controlsOverlay.classList.remove('auto-hidden');
           dom.unmuteBanner.classList.remove('hidden');
         });
         dom.video.removeEventListener('canplay', onCanPlay);
@@ -496,6 +524,10 @@
       card.appendChild(soundBars);
 
       card.addEventListener('click', () => {
+        // Desbloqueia permissão de vídeo e áudio imediatamente no toque do usuário
+        try {
+          dom.video.play().catch(() => {});
+        } catch (e) {}
         playChannel(idx);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
@@ -509,6 +541,8 @@
     // 1. Carrega os canais (usa DEFAULT_CHANNELS_DATA se disponível, ou busca da API)
     if (window.DEFAULT_CHANNELS_DATA && window.DEFAULT_CHANNELS_DATA.length) {
       channels = window.DEFAULT_CHANNELS_DATA;
+    } else if (typeof DEFAULT_CHANNELS_DATA !== 'undefined' && DEFAULT_CHANNELS_DATA.length) {
+      channels = DEFAULT_CHANNELS_DATA;
     } else {
       try {
         const res = await fetch('/api/channels');
@@ -550,10 +584,24 @@
       dom.controlsOverlay.classList.remove('auto-hidden');
     });
 
-    // Toque no vídeo para exibir ou ocultar controles
+    // Toque no vídeo: se pausado, toca. Se tocando, alterna controles
     dom.controlsOverlay.addEventListener('click', (e) => {
-      if (e.target === dom.controlsOverlay || e.target.closest('.controls-center-bar')) {
+      if (e.target.closest('button') || e.target.closest('.unmute-banner')) {
+        return;
+      }
+      if (dom.video.paused) {
+        dom.video.play().then(() => {
+          dom.video.muted = false;
+          dom.unmuteBanner.classList.add('hidden');
+        }).catch(() => {});
         scheduleControlsHide();
+      } else {
+        if (dom.controlsOverlay.classList.contains('auto-hidden')) {
+          dom.controlsOverlay.classList.remove('auto-hidden');
+          scheduleControlsHide();
+        } else {
+          dom.controlsOverlay.classList.add('auto-hidden');
+        }
       }
     });
 
